@@ -8,6 +8,8 @@ terraform {
 
 provider "aws" {
    region = "eu-west-1"
+   access_key = var.aws_access_key
+   secret_key = var.aws_secret_key
 }
 
 resource "aws_s3_bucket" "eventest_lambdas" {
@@ -23,10 +25,10 @@ resource "aws_s3_bucket" "eventest_lambdas" {
 
 resource "aws_s3_bucket_object" "caller_lambda_s3_object" {
   bucket = aws_s3_bucket.eventest_lambdas.id
-  key    = "1.0.1/caller.lambda.zip"
+  key    = "caller.lambda.${var.lambda_version}.zip"
   acl    = "private"
-  source = "dist/caller.lambda.zip"
-  etag = filemd5("dist/caller.lambda.zip")
+  source = "dist/caller.lambda.${var.lambda_version}.zip"
+  etag = filemd5("dist/caller.lambda.${var.lambda_version}.zip")
 }
 
 resource "aws_lambda_function" "eventest_caller_lambda" {

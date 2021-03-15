@@ -7,11 +7,7 @@ exports.handler = function (event, context, callback) {
       "Content-Type": "text/html; charset=utf-8",
     },
     body:
-      "<p>Hello world! TEST 1.0.2</p><div id='event'>" +
-      JSON.stringify(event) +
-      "</div><div id='context'>" +
-      JSON.stringify(context) +
-      "</div>",
+      "version: 1.0.0-8",
   };
   callback(null, response);
 };
