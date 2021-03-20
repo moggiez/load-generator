@@ -24,5 +24,10 @@ make build
 It will output the zipped code in the `dist` folder.
 
 ## IaC and deployment
+
+### Deployment from your local machine
 * Run ```make plan-infra``` to preview the deployment.
 * Run ```make infra``` to do the actual deployment
+
+### Automatic deployment
+The application is deployed automatically with GitHub action when a push to `master` branch is made.
