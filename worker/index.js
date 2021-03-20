@@ -11,7 +11,8 @@ exports.handler = function (event, context, callback) {
     body:
       {
         "version": version,
-        "build": build
+        "build": build,
+        "latest_change": "added filehashing to detect updates in lambda code."
       }
   };
   callback(null, response);

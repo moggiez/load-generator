@@ -46,6 +46,7 @@ resource "aws_lambda_function" "moggiez_worker_fn" {
 
    handler = "worker.handler"
    runtime = "nodejs14.x"
+   source_code_hash = filebase64sha256("${var.dist_dir}/worker.lambda.${var.lambda_version}.zip")
 
    role = aws_iam_role.lambda_exec.arn
 }
@@ -57,6 +58,7 @@ resource "aws_lambda_function" "moggiez_driver_fn" {
 
    handler = "driver.handler"
    runtime = "nodejs14.x"
+   source_code_hash = filebase64sha256("${var.dist_dir}/driver.lambda.${var.lambda_version}.zip")
 
    role = aws_iam_role.lambda_exec.arn
 }
