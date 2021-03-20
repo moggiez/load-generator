@@ -36,6 +36,10 @@ jobs:
     - name: Terraform Format
       run: cd infrastructure && terraform fmt -check
 
+    # Build the lambda packages
+    - name: Build lambda packages
+      run: make build
+
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       run: make plan-infra
