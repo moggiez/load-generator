@@ -1,5 +1,7 @@
 "use strict";
 const AWS = require('aws-sdk');
+const version = "0.0.1"
+const build = "13"
 exports.handler = function (event, context, callback) {
     try {
         const eventbridge = new AWS.EventBridge();

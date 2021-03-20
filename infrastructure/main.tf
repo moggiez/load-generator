@@ -27,16 +27,16 @@ resource "aws_s3_bucket_object" "worker_lambda_s3_object" {
   bucket = aws_s3_bucket.moggiez_lambdas.id
   key    = "worker.lambda.${var.lambda_version}.zip"
   acl    = "private"
-  source = "dist/worker.lambda.${var.lambda_version}.zip"
-  etag = filemd5("dist/worker.lambda.${var.lambda_version}.zip")
+  source = "${var.dist_dir}/worker.lambda.${var.lambda_version}.zip"
+  etag = filemd5("${var.dist_dir}/worker.lambda.${var.lambda_version}.zip")
 }
 
 resource "aws_s3_bucket_object" "driver_lambda_s3_object" {
   bucket = aws_s3_bucket.moggiez_lambdas.id
   key    = "driver.lambda.${var.lambda_version}.zip"
   acl    = "private"
-  source = "dist/driver.lambda.${var.lambda_version}.zip"
-  etag = filemd5("dist/driver.lambda.${var.lambda_version}.zip")
+  source = "${var.dist_dir}/driver.lambda.${var.lambda_version}.zip"
+  etag = filemd5("${var.dist_dir}/driver.lambda.${var.lambda_version}.zip")
 }
 
 resource "aws_lambda_function" "moggiez_worker_fn" {
