@@ -17,8 +17,7 @@ resource "aws_s3_bucket" "moggiez_lambdas" {
   acl    = "private"
 
   tags = {
-    Project     = "Eventest"
-    Name        = "eventest"
+    Project     = "Moggiez"
     Environment = "Prod"
   }
 }
