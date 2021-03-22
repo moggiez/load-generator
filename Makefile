@@ -13,4 +13,6 @@ infra-debug:
 infra:
 	cd infrastructure && TF_VAR_lambda_version=$(VERSION) terraform apply -auto-approve
 plan-infra:
-	cd infrastructure && TF_VAR_lambda_version=$(VERSION) terraform apply -auto-approve 
+	cd infrastructure && TF_VAR_lambda_version=$(VERSION) terraform apply -auto-approve
+fmt-infra:
+	cd infrastructure && terraform fmt

@@ -16,18 +16,6 @@ resource "aws_s3_bucket_object" "driver_lambda_s3_object" {
   etag   = filemd5("${var.dist_dir}/driver.lambda.${var.lambda_version}.zip")
 }
 
-resource "aws_lambda_function" "moggiez_worker_fn" {
-  function_name = "MoggiezWorker"
-  s3_bucket     = aws_s3_bucket.moggiez_lambdas.bucket
-  s3_key        = aws_s3_bucket_object.worker_lambda_s3_object.key
-
-  handler          = "worker.handler"
-  runtime          = "nodejs14.x"
-  source_code_hash = filebase64sha256("${var.dist_dir}/worker.lambda.${var.lambda_version}.zip")
-
-  role = aws_iam_role.lambda_exec.arn
-}
-
 resource "aws_lambda_function" "moggiez_driver_fn" {
   function_name = "MoggiezDriver"
   s3_bucket     = aws_s3_bucket.moggiez_lambdas.bucket
@@ -36,6 +24,18 @@ resource "aws_lambda_function" "moggiez_driver_fn" {
   handler          = "driver.handler"
   runtime          = "nodejs14.x"
   source_code_hash = filebase64sha256("${var.dist_dir}/driver.lambda.${var.lambda_version}.zip")
+
+  role = aws_iam_role.lambda_exec.arn
+}
+
+resource "aws_lambda_function" "moggiez_worker_fn" {
+  function_name = "MoggiezWorker"
+  s3_bucket     = aws_s3_bucket.moggiez_lambdas.bucket
+  s3_key        = aws_s3_bucket_object.worker_lambda_s3_object.key
+
+  handler          = "worker.handler"
+  runtime          = "nodejs14.x"
+  source_code_hash = filebase64sha256("${var.dist_dir}/worker.lambda.${var.lambda_version}.zip")
 
   role = aws_iam_role.lambda_exec.arn
 }
@@ -58,6 +58,7 @@ resource "aws_iam_policy" "eventbridge_events" {
   })
 }
 
+
 # IAM role which dictates what other AWS services the Lambda function
 # may access.
 resource "aws_iam_role" "lambda_exec" {
@@ -76,4 +77,12 @@ resource "aws_iam_role" "lambda_exec" {
     ]
   })
   managed_policy_arns = [aws_iam_policy.eventbridge_events.arn]
+}
+
+resource "aws_lambda_permission" "allow_eventbridge" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.moggiez_worker_fn.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = format("arn:aws:events:${var.region}:${var.account}:rule/%s/%s", aws_cloudwatch_event_bus.moggiez_load_test.name, aws_cloudwatch_event_rule.catch_all_lambda.name)
 }

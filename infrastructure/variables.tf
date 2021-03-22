@@ -19,22 +19,16 @@ variable "dist_dir" {
 }
 
 variable "account" {
-  type = string
+  type    = string
   default = "989665778089"
 }
 
 variable "region" {
-  type = string
+  type    = string
   default = "eu-west-1"
 }
 
 variable "application" {
-  type = string
+  type    = string
   default = "Moggiez"
-}
-
-# Rules names
-variable "invoke_worker_rule_name" {
-  type = string
-  default = "moggiez-load-test-catch-all"
 }

@@ -10,7 +10,7 @@ resource "aws_cloudwatch_event_bus" "moggiez_load_test" {
 # Rule - Target: catch all and call driver lambda
 resource "aws_cloudwatch_event_rule" "catch_all_lambda" {
   event_bus_name = aws_cloudwatch_event_bus.moggiez_load_test.name
-  name           = var.invoke_worker_rule_name
+  name           = "moggiez-load-test-catch-all"
   description    = "Catch all events on load-test event bus"
 
   event_pattern = <<EOF
