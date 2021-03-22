@@ -1,19 +1,41 @@
 "use strict";
 
+const AWS = require("aws-sdk");
 const version = "0.0.1"
 const build = "13"
+
 exports.handler = function (event, context, callback) {
-  var response = {
-    statusCode: 200,
-    headers: {
-      "Content-Type": "text/html; charset=utf-8",
-    },
-    body:
-      {
-        "version": version,
-        "build": build,
-        "latest_change": "added filehashing to detect updates in lambda code."
+  try {
+    const eventbridge = new AWS.EventBridge();
+
+    const result_event = {
+      event: event,
+      result: {
+        action: null,
+        status: 200,
+        message: "Nothing was done."
       }
-  };
-  callback(null, response);
+    }
+    const params = {
+      Entries: [
+        {
+          Source: "Worker User Call",
+          DetailType: "Call Result",
+          Detail: JSON.stringify(result_event),
+          EventBusName: "moggiez-load-test",
+        },
+      ],
+    };
+    console.log("eventbridge", eventbridge);
+    const result = eventbridge.putEvents(params, function (err, data) {
+      if (err) {
+        console.log("Error", err);
+        callback(err, null);
+      } else {
+        callback(null, data.RuleArn);
+      }
+    });
+  } catch (exc) {
+    callback(exc, null);
+  }
 };

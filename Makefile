@@ -8,8 +8,6 @@ build-worker:
 build-driver:
 	zip -r ./dist/driver.lambda.$(VERSION).zip driver/
 build: build-cleanup build-worker build-driver
-deploy:
-	aws s3 cp ./build/caller.lambda.zip s3://eventest-lambdas/$(VERSION)/
 infra-debug:
 	cd infrastructure && TF_LOG=DEBUG terraform apply -auto-approve infra
 infra:

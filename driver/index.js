@@ -1,20 +1,18 @@
 "use strict";
+
 const AWS = require("aws-sdk");
 const version = "0.0.1";
 const build = "13";
+
 exports.handler = function (event, context, callback) {
   try {
     const eventbridge = new AWS.EventBridge();
-    const detail = {
-      a: "test",
-      b: "me",
-    };
     const params = {
       Entries: [
         {
           Source: "Driver Lambda",
-          DetailType: "Moggiez Simple Call",
-          Detail: JSON.stringify(detail),
+          DetailType: "User Calls",
+          Detail: JSON.stringify(event),
           EventBusName: "moggiez-load-test",
         },
       ],
@@ -25,11 +23,9 @@ exports.handler = function (event, context, callback) {
         console.log("Error", err);
         callback(err, null);
       } else {
-        console.log("Success", data.RuleArn);
-        callback(null, result);
+        callback(null, data.RuleArn);
       }
     });
-    callback(null, JSON.stringify(eventbridge));
   } catch (exc) {
     callback(exc, null);
   }

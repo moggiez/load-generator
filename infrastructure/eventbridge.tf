@@ -2,7 +2,7 @@ resource "aws_cloudwatch_event_bus" "moggiez_load_test" {
   name = "moggiez-load-test"
 
   tags = {
-    Project     = "Moggiez"
+    Project     = var.application
     Environment = "Prod"
   }
 }
@@ -10,17 +10,18 @@ resource "aws_cloudwatch_event_bus" "moggiez_load_test" {
 # Rule - Target: catch all and call driver lambda
 resource "aws_cloudwatch_event_rule" "catch_all_lambda" {
   event_bus_name = aws_cloudwatch_event_bus.moggiez_load_test.name
-  name           = "moggiez-load-test-catch-all"
+  name           = var.invoke_worker_rule_name
   description    = "Catch all events on load-test event bus"
 
   event_pattern = <<EOF
 {
-  "account": ["989665778089"]
+  "account": ["${var.account}"],
+  "detail-type": ["User Calls", "Call Result"]
 }
 EOF
 
   tags = {
-    Project     = "Moggiez"
+    Project     = var.application
     Environment = "Prod"
   }
 }
@@ -29,7 +30,7 @@ resource "aws_cloudwatch_event_target" "call_lambda" {
   event_bus_name = aws_cloudwatch_event_bus.moggiez_load_test.name
   rule           = aws_cloudwatch_event_rule.catch_all_lambda.name
   target_id      = "MoggiezDriver"
-  arn            = aws_lambda_function.moggiez_driver_fn.arn
+  arn            = aws_lambda_function.moggiez_worker_fn.arn
 }
 
 
@@ -45,12 +46,13 @@ resource "aws_cloudwatch_event_rule" "catch_all_log" {
 
   event_pattern = <<EOF
 {
-  "account": ["989665778089"]
+  "account": ["${var.account}"],
+  "detail-type": ["User Calls", "Call Result"]
 }
 EOF
 
   tags = {
-    Project     = "Moggiez"
+    Project     = var.application
     Environment = "Prod"
   }
 }
