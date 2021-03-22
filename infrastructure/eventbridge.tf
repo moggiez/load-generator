@@ -16,7 +16,7 @@ resource "aws_cloudwatch_event_rule" "catch_all_lambda" {
   event_pattern = <<EOF
 {
   "account": ["${var.account}"],
-  "detail-type": ["User Calls", "Call Result"]
+  "detail-type": ["User Calls"]
 }
 EOF
 
