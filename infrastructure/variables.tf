@@ -8,7 +8,7 @@ variable "aws_secret_key" {
   sensitive = true
 }
 
-variable "lambda_version" {
+variable "dist_version" {
   type    = string
   default = "1.0.0"
 }
