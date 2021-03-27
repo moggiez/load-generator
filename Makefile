@@ -8,6 +8,8 @@ build-worker:
 build-driver:
 	zip -r ./dist/driver.lambda.$(VERSION).zip driver/
 build: build-cleanup build-worker build-driver
+terraform-init:
+	cd infrastructure && terraform init -backend-config="bucket=moggiez-terraform-state-backend" -backend-config="key=terraform.state" -backend-config="region=eu-west-1"
 infra-debug:
 	cd infrastructure && TF_LOG=DEBUG terraform apply -auto-approve infra
 infra:
@@ -18,3 +20,5 @@ fmt-infra:
 	cd infrastructure && terraform fmt
 destroy-infra:
 	cd infrastructure && terraform destroy
+terraform-backend:
+	cd infrastructure/terraform-backend && terraform init && terraform apply -auto-approve
