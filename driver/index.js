@@ -1,8 +1,6 @@
 "use strict";
 
 const AWS = require("aws-sdk");
-const version = "0.0.1";
-const build = "13";
 
 exports.handler = function (event, context, callback) {
   try {
@@ -10,7 +8,7 @@ exports.handler = function (event, context, callback) {
     const params = {
       Entries: [
         {
-          Source: "Driver Lambda",
+          Source: "Driver",
           DetailType: "User Calls",
           Detail: JSON.stringify(event),
           EventBusName: "moggiez-load-test",
@@ -18,7 +16,7 @@ exports.handler = function (event, context, callback) {
       ],
     };
     console.log("eventbridge", eventbridge);
-    const result = eventbridge.putEvents(params, function (err, data) {
+    eventbridge.putEvents(params, function (err, data) {
       if (err) {
         console.log("Error", err);
         callback(err, null);

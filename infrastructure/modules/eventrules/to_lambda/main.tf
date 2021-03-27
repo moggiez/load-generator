@@ -1,7 +1,7 @@
 resource "aws_cloudwatch_event_rule" "catch_all_lambda" {
   event_bus_name = var.eventbus.name
-  name           = "moggiez-load-test-catch-all"
-  description    = "Catch all events on load-test event bus"
+  name           = "${var.application}-catch-type-to-lambda"
+  description    = "Catch all events on event bus with type and send them to lambda function"
 
   event_pattern = <<EOF
 {

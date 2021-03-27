@@ -11,5 +11,8 @@ variable "account" {
 variable "eventbus" {
 }
 
+variable "event_source" {
+}
+
 variable "log_group" {
 }

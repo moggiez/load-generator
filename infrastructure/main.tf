@@ -28,7 +28,11 @@ locals {
   }
 }
 
-resource "aws_cloudwatch_log_group" "moggiez_test" {
+resource "aws_cloudwatch_log_group" "moggiez_worker" {
+  name = "/aws/events/moggiez_test"
+}
+
+resource "aws_cloudwatch_log_group" "moggiez_driver" {
   name = "/aws/events/moggiez_test"
 }
 
@@ -51,12 +55,22 @@ module "worker" {
 }
 
 # Creates event rules to link together events and lambdas
-module "rule_to_log_group" {
-  source      = "./modules/eventrules/to_log_group"
-  application = var.application
-  account     = var.account
-  eventbus    = aws_cloudwatch_event_bus.moggiez_load_test
-  log_group   = aws_cloudwatch_log_group.moggiez_test
+module "worker_source_to_log_group" {
+  source       = "./modules/eventrules/source_to_log_group"
+  application  = var.application
+  account      = var.account
+  eventbus     = aws_cloudwatch_event_bus.moggiez_load_test
+  event_source = "Worker"
+  log_group    = aws_cloudwatch_log_group.moggiez_worker
+}
+
+module "driver_source_to_log_group" {
+  source       = "./modules/eventrules/source_to_log_group"
+  application  = var.application
+  account      = var.account
+  eventbus     = aws_cloudwatch_event_bus.moggiez_load_test
+  event_source = "Driver"
+  log_group    = aws_cloudwatch_log_group.moggiez_driver
 }
 
 module "rule_to_lambda" {
