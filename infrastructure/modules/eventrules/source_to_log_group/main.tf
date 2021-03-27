@@ -6,7 +6,7 @@ resource "aws_cloudwatch_event_rule" "source_to_log" {
   event_pattern = <<EOF
 {
   "account": ["${var.account}"],
-  "source": [var.event_source]
+  "source": ["${var.event_source}"]
 }
 EOF
 
