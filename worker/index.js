@@ -43,14 +43,13 @@ const buildEventParams = (source, type, payload) => {
 exports.handler = function (event, context, callback) {
   try {
     const eventbridge = new AWS.EventBridge();
-    sendEvent(eventbridge, buildEventParams(name, "Worker Request Start", event), data => console.log(data), err => console.log(err));
-    const request = event.request;
+    const request = event.detail.request;
     const options = request.options;
     makeRequest(
-      event.request.options,
+      options,
       (status, data) => {
         const payload = {
-          request: event.request,
+          request: request,
           status: status,
           data: data
         }
@@ -58,7 +57,7 @@ exports.handler = function (event, context, callback) {
       },
       error => {
         const payload = {
-          request: event.request,
+          request: request,
           error: error
         }
         sendEvent(eventbridge, buildEventParams(name, "Worker Request Failure", payload), data => callback(null, data), err => callback(err, null));
