@@ -128,3 +128,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 infrastructure/.terraform/
+infrastructure/terraform-backend/.terraform
