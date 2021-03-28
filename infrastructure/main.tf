@@ -8,6 +8,17 @@ terraform {
   backend "s3" {}
 }
 
+data "terraform_remote_state" "s3" {
+  backend = "s3"
+  config = {
+    bucket         = "${var.backend_name}-terraform-state-backend"
+    key            = "terraform.state"
+    region         = "eu-west-1"
+    dynamodb_table = "${var.backend_name}-terraform_state"
+  }
+}
+
+
 provider "aws" {
   region     = var.region
   access_key = var.aws_access_key

@@ -1,3 +1,8 @@
+variable "backend_name" {
+  type    = string
+  default = "moggiez"
+}
+
 variable "aws_access_key" {
   type      = string
   sensitive = true
