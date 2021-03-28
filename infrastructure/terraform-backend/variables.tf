@@ -14,6 +14,6 @@ variable "aws_secret_key" {
 }
 
 variable "backend_name" {
-    type = string
-    default = "moggiez"
+  type    = string
+  default = "moggiez"
 }
