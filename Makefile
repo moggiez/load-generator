@@ -1,5 +1,5 @@
 VERSION=$(shell cat version.txt)
-version:
+version-build:
 	./increment_version.sh
 build-cleanup:
 	rm -rf ./dist/* & mkdir -p dist
@@ -8,17 +8,17 @@ build-worker:
 build-driver:
 	zip -r ./dist/driver.lambda.$(VERSION).zip driver/
 build: build-cleanup build-worker build-driver
-terraform-init:
+infra-init:
 	cd infrastructure && terraform init -force-copy -backend-config="bucket=moggiez-terraform-state-backend" -backend-config="key=terraform.state" -backend-config="region=eu-west-1"
 infra-debug:
 	cd infrastructure && TF_LOG=DEBUG terraform apply -auto-approve infra
-infra:
+deploy: build
 	cd infrastructure && terraform init && TF_VAR_dist_version=$(VERSION) terraform apply -auto-approve
-plan-infra:
+preview: build
 	cd infrastructure && terraform init && TF_VAR_dist_version=$(VERSION) terraform apply -auto-approve
-fmt-infra:
+fmt:
 	cd infrastructure && terraform fmt
-destroy-infra:
+undeploy:
 	cd infrastructure && terraform destroy
 terraform-backend:
 	cd infrastructure/terraform-backend && terraform init && terraform apply -auto-approve

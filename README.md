@@ -19,8 +19,7 @@ terraform -install-autocomplete
 Run in terminal:
 
 ```bash
-cd infrastructure
-terraform init
+make infra-init
 ```
 
 ### Create terraform backend in AWS (if not already created)
@@ -31,24 +30,32 @@ Run in terminal:
 make terraform-backend
 ```
 
-## Packaging the code of the lambda functions
-
-Run the code below in the terminal:
-
-```bash
-make version
-make build
-```
-
-It will output the zipped code in the `dist` folder.
-
 ## IaC and deployment
 
 ### Deployment from your local machine
 
-- Run `make plan-infra` to preview the deployment.
-- Run `make infra` to do the actual deployment
+- Run `make preview` to preview the deployment.
+- Run `make deploy` to do the actual deployment
 
 ### Automatic deployment
 
 The application is deployed automatically with GitHub action when a push to `master` branch is made.
+
+## Updating the version of the code
+
+- Update the base version (it uses SemVer)
+- To update the build number
+
+```bash
+make version-build
+```
+
+## Only buildiong the packages of the lambda functions
+
+Run the code below in the terminal:
+
+```bash
+make build
+```
+
+It will output the zipped code in the `dist` folder.
