@@ -18,6 +18,11 @@ variable "account" {
   default = "989665778089"
 }
 
+variable "region" {
+  type    = string
+  default = "eu-west-1"
+}
+
 variable "application" {
   type    = string
   default = "Moggiez"
