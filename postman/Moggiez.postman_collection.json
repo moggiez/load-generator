@@ -1,0 +1,41 @@
+{
+	"info": {
+		"_postman_id": "aed5755e-a38c-48fb-adc7-adff08ab798c",
+		"name": "Moggiez",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Trigger Load Test",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"request\": {\n        \"options\": {\n            \"hostname\": \"www.google.com\",\n            \"port\": 80,\n            \"protocol\": \"http:\"\n        }\n    }\n}"
+				},
+				"url": {
+					"raw": "https://y7nc4fdqpg.execute-api.eu-west-1.amazonaws.com/prod",
+					"protocol": "https",
+					"host": [
+						"y7nc4fdqpg",
+						"execute-api",
+						"eu-west-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"prod"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

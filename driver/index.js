@@ -15,16 +15,30 @@ exports.handler = function (event, context, callback) {
         },
       ],
     };
-    console.log("eventbridge", eventbridge);
     eventbridge.putEvents(params, function (err, data) {
       if (err) {
-        console.log("Error", err);
-        callback(err, null);
+        callback(err, {
+            statusCode: 500,
+            body: err,
+            headers: {'Content-Type': 'text/plain'}
+        });
       } else {
-        callback(null, data.RuleArn);
+        const message = {
+          triggeredRule: data.RuleArn,
+          message: "Successfully called Moggiez Driver"
+        }
+        callback(null, {
+            statusCode: 200,
+            body: JSON.stringify(message),
+            headers: {'Content-Type': 'application/json'}
+        });
       }
     });
   } catch (exc) {
-    callback(exc, null);
+    callback(exc, {
+            statusCode: 500,
+            body: err,
+            headers: {'Content-Type': 'text/plain'}
+    });
   }
 };

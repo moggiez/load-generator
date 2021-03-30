@@ -3,16 +3,6 @@ variable "backend_name" {
   default = "moggiez"
 }
 
-variable "aws_access_key" {
-  type      = string
-  sensitive = true
-}
-
-variable "aws_secret_key" {
-  type      = string
-  sensitive = true
-}
-
 variable "dist_version" {
   type    = string
   default = "1.0.0"

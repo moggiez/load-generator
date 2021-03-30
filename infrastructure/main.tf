@@ -15,8 +15,6 @@ terraform {
 
 provider "aws" {
   region     = var.region
-  access_key = var.aws_access_key
-  secret_key = var.aws_secret_key
 }
 
 resource "aws_s3_bucket" "moggiez_lambdas" {
@@ -96,4 +94,9 @@ module "rule_to_lambda" {
   region      = var.region
   eventbus    = aws_cloudwatch_event_bus.moggiez_load_test
   lambda      = module.worker.lambda
+}
+
+module "gateway_to_driver_lambda" {
+  source = "./modules/lambda_gateway"
+  lambda = module.driver.lambda
 }
