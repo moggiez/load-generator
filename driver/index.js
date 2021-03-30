@@ -10,7 +10,7 @@ exports.handler = function (event, context, callback) {
         {
           Source: "Driver",
           DetailType: "User Calls",
-          Detail: JSON.stringify(event),
+          Detail: event.body,
           EventBusName: "moggiez-load-test",
         },
       ],
