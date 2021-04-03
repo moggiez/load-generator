@@ -4,10 +4,12 @@ version-build:
 build-cleanup:
 	rm -rf ./dist/* & mkdir -p dist
 build-worker:
-	zip -r ./dist/worker.lambda.$(VERSION).zip worker/
+	cd code/worker/ && zip -r ../../dist/worker_lambda.$(VERSION).zip ./
 build-driver:
-	zip -r ./dist/driver.lambda.$(VERSION).zip driver/
-build: build-cleanup build-worker build-driver
+	cd code/driver/ && zip -r ../../dist/driver_lambda.$(VERSION).zip ./
+build-archiver:
+	cd code/archiver/ && zip -r ../../dist/archiver_lambda.$(VERSION).zip ./
+build: build-cleanup build-worker build-driver build-archiver
 infra-init:
 	cd infrastructure && terraform init -force-copy -backend-config="bucket=moggiez-terraform-state-backend" -backend-config="key=terraform.state" -backend-config="region=eu-west-1"
 infra-debug:

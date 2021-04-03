@@ -3,12 +3,12 @@ resource "aws_cloudwatch_event_rule" "source_to_log" {
   name           = "${var.application}-source-${var.event_source}-to-logs"
   description    = "Catch all events on the event bus and log to CloudWatch Logs"
 
-  event_pattern = <<EOF
+  event_pattern = jsonencode(
 {
   "account": ["${var.account}"],
   "source": ["${var.event_source}"]
 }
-EOF
+  )
 
   tags = {
     Project     = var.application

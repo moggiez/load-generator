@@ -2,28 +2,28 @@ terraform {
   required_version = ">= 0.14.8"
 }
 
-resource "aws_s3_bucket_object" "worker_lambda_s3_object" {
+resource "aws_s3_bucket_object" "lambda_s3_object" {
   bucket = var.s3_bucket.id
-  key    = "worker.lambda.${var.dist_version}.zip"
+  key    = "${var.key}.${var.dist_version}.zip"
   acl    = "private"
-  source = "${var.dist_dir}/worker.lambda.${var.dist_version}.zip"
-  etag   = filemd5("${var.dist_dir}/worker.lambda.${var.dist_version}.zip")
+  source = "${var.dist_dir}/${var.key}.${var.dist_version}.zip"
+  etag   = filemd5("${var.dist_dir}/${var.key}.${var.dist_version}.zip")
 }
 
 resource "aws_lambda_function" "moggiez_worker_fn" {
-  function_name = "MoggiezWorker"
+  function_name = var.function_name
   s3_bucket     = var.s3_bucket.bucket
-  s3_key        = aws_s3_bucket_object.worker_lambda_s3_object.key
+  s3_key        = aws_s3_bucket_object.lambda_s3_object.key
 
-  handler          = "worker.handler"
+  handler          = "index.handler"
   runtime          = "nodejs14.x"
-  source_code_hash = filebase64sha256("${var.dist_dir}/worker.lambda.${var.dist_version}.zip")
+  source_code_hash = filebase64sha256("${var.dist_dir}/${var.key}.${var.dist_version}.zip")
 
   role = aws_iam_role.lambda_exec.arn
 }
 
 resource "aws_iam_policy" "eventbridge_events" {
-  name        = "eventbridge_access_worker"
+  name        = "eventbridge_access_${var.key}"
   path        = "/"
   description = "IAM policy for logging from a lambda"
 
@@ -40,7 +40,7 @@ resource "aws_iam_policy" "eventbridge_events" {
 }
 
 resource "aws_iam_role" "lambda_exec" {
-  name = "moggiez_worker_lambda_execution_role"
+  name = "moggiez_${var.key}_execution_role"
   assume_role_policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [
@@ -54,5 +54,5 @@ resource "aws_iam_role" "lambda_exec" {
       }
     ]
   })
-  managed_policy_arns = [aws_iam_policy.eventbridge_events.arn]
+  managed_policy_arns = concat(var.policies, [aws_iam_policy.eventbridge_events.arn])
 }

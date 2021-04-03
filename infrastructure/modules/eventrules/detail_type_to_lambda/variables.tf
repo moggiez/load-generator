@@ -13,6 +13,14 @@ variable "region" {
   description = "AWS region"
 }
 
+variable "name" {
+  type = string
+}
+
+variable "detail_types" {
+  type = list
+}
+
 variable "eventbus" {
 }
 
