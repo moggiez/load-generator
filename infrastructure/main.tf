@@ -161,6 +161,12 @@ module "gateway_to_driver_lambda" {
   lambda = module.driver.lambda
 }
 
+module "gateway_cors" {
+  source          = "./modules/api_gateway_enable_cors"
+  api_id          = module.gateway_to_driver_lambda.api.id
+  api_resource_id = module.gateway_to_driver_lambda.api_resource.id
+}
+
 # Results - integration from lambda to S3
 ## Success
 
