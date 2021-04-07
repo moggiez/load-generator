@@ -12,8 +12,8 @@
 				"header": [
 					{
 						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
+						"type": "text",
+						"value": "application/json"
 					}
 				],
 				"body": {
@@ -21,17 +21,51 @@
 					"raw": "{\n    \"request\": {\n        \"options\": {\n            \"hostname\": \"www.google.com\",\n            \"port\": 80,\n            \"protocol\": \"http:\"\n        }\n    }\n}"
 				},
 				"url": {
-					"raw": "https://y7nc4fdqpg.execute-api.eu-west-1.amazonaws.com/prod",
+					"raw": "https://og6wfegdad.execute-api.eu-west-1.amazonaws.com/v1_1/loadtest",
 					"protocol": "https",
 					"host": [
-						"y7nc4fdqpg",
+						"og6wfegdad",
 						"execute-api",
 						"eu-west-1",
 						"amazonaws",
 						"com"
 					],
 					"path": [
-						"prod"
+						"v1_1",
+						"loadtest"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "OPTIONS",
+			"request": {
+				"method": "OPTIONS",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"request\": {\n        \"options\": {\n            \"hostname\": \"www.google.com\",\n            \"port\": 80,\n            \"protocol\": \"http:\"\n        }\n    }\n}"
+				},
+				"url": {
+					"raw": "https://og6wfegdad.execute-api.eu-west-1.amazonaws.com/v1_1/loadtest",
+					"protocol": "https",
+					"host": [
+						"og6wfegdad",
+						"execute-api",
+						"eu-west-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"v1_1",
+						"loadtest"
 					]
 				}
 			},
