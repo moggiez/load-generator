@@ -17,7 +17,7 @@ infra-debug:
 deploy: build
 	cd infrastructure && terraform init && TF_VAR_dist_version=$(VERSION) terraform apply -auto-approve
 preview: build
-	cd infrastructure && terraform init && TF_VAR_dist_version=$(VERSION) terraform apply -auto-approve
+	cd infrastructure && terraform init && TF_VAR_dist_version=$(VERSION) terraform plan -auto-approve
 fmt:
 	cd infrastructure && terraform fmt
 undeploy:
