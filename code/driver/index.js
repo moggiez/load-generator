@@ -7,7 +7,7 @@ exports.handler = function (event, context, callback) {
     'Content-Type': 'text/plain',
     'Access-Control-Allow-Origin': '*'
   }
-
+  const detail = event.body;
   try {
     const eventbridge = new AWS.EventBridge();
     const params = {
@@ -15,7 +15,7 @@ exports.handler = function (event, context, callback) {
         {
           Source: "Driver",
           DetailType: "User Calls",
-          Detail: event.body,
+          Detail: detail,
           EventBusName: "moggiez-load-test",
         },
       ],
@@ -28,15 +28,26 @@ exports.handler = function (event, context, callback) {
             headers: headers
         });
       } else {
-        const message = {
-          triggeredRule: data.RuleArn,
-          message: "Successfully called Moggiez Driver"
+        if (data.FailedEntryCount == 0) {
+          const message = {
+            triggeredRule: data.RuleArn,
+            message: "Successfully called Moggiez Driver"
+          }
+          callback(null, {
+              statusCode: 200,
+              body: JSON.stringify(message),
+              headers: headers
+          });
+        } else {
+          const errPayload = {
+            data: data
+          }
+          callback(null, {
+              statusCode: 500,
+              body: JSON.stringify(errPayload),
+              headers: headers
+          });
         }
-        callback(null, {
-            statusCode: 200,
-            body: JSON.stringify(message),
-            headers: headers
-        });
       }
     });
   } catch (exc) {
