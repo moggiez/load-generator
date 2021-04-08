@@ -3,6 +3,11 @@
 const AWS = require("aws-sdk");
 
 exports.handler = function (event, context, callback) {
+  const headers = {
+    'Content-Type': 'text/plain',
+    'Access-Control-Allow-Origin': '*'
+  }
+
   try {
     const eventbridge = new AWS.EventBridge();
     const params = {
@@ -20,7 +25,7 @@ exports.handler = function (event, context, callback) {
         callback(err, {
             statusCode: 500,
             body: err,
-            headers: {'Content-Type': 'text/plain'}
+            headers: headers
         });
       } else {
         const message = {
@@ -30,15 +35,15 @@ exports.handler = function (event, context, callback) {
         callback(null, {
             statusCode: 200,
             body: JSON.stringify(message),
-            headers: {'Content-Type': 'application/json'}
+            headers: headers
         });
       }
     });
   } catch (exc) {
     callback(exc, {
             statusCode: 500,
-            body: err,
-            headers: {'Content-Type': 'text/plain'}
+            body: exc,
+            headers: headers
     });
   }
 };
