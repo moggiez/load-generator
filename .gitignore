@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 infrastructure/.terraform/
 infrastructure/terraform-backend/.terraform
+**/node_modules/

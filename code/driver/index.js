@@ -4,10 +4,11 @@ const AWS = require("aws-sdk");
 
 exports.handler = function (event, context, callback) {
   const headers = {
-    'Content-Type': 'text/plain',
-    'Access-Control-Allow-Origin': '*'
-  }
-  const detail = event.body;
+    "Content-Type": "text/plain",
+    "Access-Control-Allow-Origin": "*",
+  };
+  const body = JSON.parse(event.body);
+  const detail = "steps" in body ? body.steps[0] : body;
   try {
     const eventbridge = new AWS.EventBridge();
     const params = {
@@ -15,7 +16,7 @@ exports.handler = function (event, context, callback) {
         {
           Source: "Driver",
           DetailType: "User Calls",
-          Detail: detail,
+          Detail: JSON.stringify(detail),
           EventBusName: "moggiez-load-test",
         },
       ],
@@ -23,38 +24,38 @@ exports.handler = function (event, context, callback) {
     eventbridge.putEvents(params, function (err, data) {
       if (err) {
         callback(err, {
-            statusCode: 500,
-            body: err,
-            headers: headers
+          statusCode: 500,
+          body: err,
+          headers: headers,
         });
       } else {
         if (data.FailedEntryCount == 0) {
           const message = {
             triggeredRule: data.RuleArn,
-            message: "Successfully called Moggiez Driver"
-          }
+            message: "Successfully called Moggiez Driver",
+          };
           callback(null, {
-              statusCode: 200,
-              body: JSON.stringify(message),
-              headers: headers
+            statusCode: 200,
+            body: JSON.stringify(message),
+            headers: headers,
           });
         } else {
           const errPayload = {
-            data: data
-          }
+            data: data,
+          };
           callback(null, {
-              statusCode: 500,
-              body: JSON.stringify(errPayload),
-              headers: headers
+            statusCode: 500,
+            body: JSON.stringify(errPayload),
+            headers: headers,
           });
         }
       }
     });
   } catch (exc) {
     callback(exc, {
-            statusCode: 500,
-            body: exc,
-            headers: headers
+      statusCode: 500,
+      body: exc,
+      headers: headers,
     });
   }
 };
