@@ -22,5 +22,3 @@ fmt:
 	cd infrastructure && terraform fmt
 undeploy:
 	cd infrastructure && terraform destroy
-terraform-backend:
-	cd infrastructure/terraform-backend && terraform init && terraform apply -auto-approve
