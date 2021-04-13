@@ -1,6 +1,6 @@
 resource "aws_api_gateway_rest_api" "_" {
-  name        = "MoggiezAPIGateway"
-  description = "Moggiez API Gateway for triggering load tests"
+  name        = var.name
+  description = "${var.name} API Gateway"
 }
 
 resource "aws_api_gateway_resource" "_" {
@@ -12,16 +12,16 @@ resource "aws_api_gateway_resource" "_" {
 resource "aws_api_gateway_method" "_" {
    rest_api_id   = aws_api_gateway_rest_api._.id
    resource_id   = aws_api_gateway_resource._.id
-   http_method   = "POST"
+   http_method   = var.http_method
    authorization = "NONE"
 }
 
 resource "aws_api_gateway_integration" "_" {
    rest_api_id = aws_api_gateway_rest_api._.id
    resource_id = aws_api_gateway_resource._.id
-   http_method = aws_api_gateway_method._.http_method
-
+   http_method             = aws_api_gateway_method._.http_method
    integration_http_method = "POST"
+
    type                    = "AWS_PROXY"
    uri                     = var.lambda.invoke_arn
 }

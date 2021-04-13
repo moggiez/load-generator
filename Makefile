@@ -9,7 +9,9 @@ build-driver:
 	cd code/driver/ && zip -r ../../dist/driver_lambda.$(VERSION).zip ./
 build-archiver:
 	cd code/archiver/ && zip -r ../../dist/archiver_lambda.$(VERSION).zip ./
-build: build-cleanup build-worker build-driver build-archiver
+build-playbook-api:
+	cd code/api/customer/playbook/ && zip -r ../../../../dist/playbook_api.$(VERSION).zip ./
+build: build-cleanup build-worker build-driver build-archiver build-playbook-api
 infra-init:
 	cd infrastructure && terraform init -force-copy -backend-config="bucket=moggiez-terraform-state-backend" -backend-config="key=terraform.state" -backend-config="region=eu-west-1"
 infra-debug:
