@@ -1,15 +1,15 @@
 variable "application" {
-  type = string
+  type        = string
   description = "Application Name"
 }
 
 variable "account" {
-  type    = string
+  type        = string
   description = "AWS account id"
 }
 
 variable "region" {
-  type = string
+  type        = string
   description = "AWS region"
 }
 
@@ -18,7 +18,7 @@ variable "name" {
 }
 
 variable "detail_types" {
-  type = list
+  type = list(any)
 }
 
 variable "eventbus" {

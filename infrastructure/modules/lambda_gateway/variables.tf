@@ -1,9 +1,9 @@
 variable "name" {
-  
+
 }
 
 variable "lambda" {
-  
+
 }
 
 variable "resource_path_part" {
@@ -11,6 +11,6 @@ variable "resource_path_part" {
 }
 
 variable "http_method" {
-  type = string
+  type    = string
   default = "GET"
 }

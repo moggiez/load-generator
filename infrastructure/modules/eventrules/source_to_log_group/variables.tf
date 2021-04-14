@@ -1,10 +1,10 @@
 variable "application" {
-  type = string
+  type        = string
   description = "Application Name"
 }
 
 variable "account" {
-  type    = string
+  type        = string
   description = "AWS account id"
 }
 

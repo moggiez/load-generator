@@ -2,7 +2,7 @@ variable "s3_bucket" {
 }
 
 variable "dist_dir" {
-  type    = string
+  type = string
 }
 
 variable "dist_version" {
@@ -19,5 +19,5 @@ variable "key" {
 }
 
 variable "policies" {
-  type = list
+  type = list(any)
 }

@@ -21,6 +21,6 @@ deploy: build
 preview: build
 	cd infrastructure && terraform init && TF_VAR_dist_version=$(VERSION) terraform plan
 fmt:
-	cd infrastructure && terraform fmt
+	cd infrastructure && terraform fmt -recursive
 undeploy:
 	cd infrastructure && terraform destroy

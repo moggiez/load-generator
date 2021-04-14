@@ -2,7 +2,7 @@ variable "s3_bucket" {
 }
 
 variable "dist_dir" {
-  type    = string
+  type = string
 }
 
 variable "dist_version" {

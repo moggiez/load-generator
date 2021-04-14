@@ -10,18 +10,18 @@ resource "aws_api_gateway_resource" "_" {
 }
 
 resource "aws_api_gateway_method" "_" {
-   rest_api_id   = aws_api_gateway_rest_api._.id
-   resource_id   = aws_api_gateway_resource._.id
-   http_method   = var.http_method
-   authorization = "NONE"
+  rest_api_id   = aws_api_gateway_rest_api._.id
+  resource_id   = aws_api_gateway_resource._.id
+  http_method   = var.http_method
+  authorization = "NONE"
 }
 
 resource "aws_api_gateway_integration" "_" {
-   rest_api_id = aws_api_gateway_rest_api._.id
-   resource_id = aws_api_gateway_resource._.id
-   http_method             = aws_api_gateway_method._.http_method
-   integration_http_method = "POST"
+  rest_api_id             = aws_api_gateway_rest_api._.id
+  resource_id             = aws_api_gateway_resource._.id
+  http_method             = aws_api_gateway_method._.http_method
+  integration_http_method = "POST"
 
-   type                    = "AWS_PROXY"
-   uri                     = var.lambda.invoke_arn
+  type = "AWS_PROXY"
+  uri  = var.lambda.invoke_arn
 }

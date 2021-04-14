@@ -1,6 +1,3 @@
-terraform {
-  required_version = ">= 0.14.8"
-}
 
 resource "aws_s3_bucket_object" "lambda_s3_object" {
   bucket = var.s3_bucket.id

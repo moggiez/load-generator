@@ -4,14 +4,14 @@ resource "aws_cloudwatch_event_rule" "catch_all_lambda" {
   description    = "Catch all events on event bus with type and send them to lambda function"
 
   event_pattern = jsonencode(
-{
-  "account": ["${var.account}"],
-  "detail-type": var.detail_types
-}
+    {
+      "account" : ["${var.account}"],
+      "detail-type" : var.detail_types
+    }
   )
 
   tags = {
-    Project     = var.application
+    Project = var.application
   }
 }
 
