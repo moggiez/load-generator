@@ -7,13 +7,13 @@ build-cleanup:
 	rm -rf ./dist/* & mkdir -p dist
 
 build-worker:
-	cd code/worker/ && zip -r ../../dist/worker_lambda.$(VERSION).zip ./
+	cd code/worker/ && npm i && zip -r ../../dist/worker_lambda.$(VERSION).zip ./
 
 build-driver:
-	cd code/driver/ && zip -r ../../dist/driver_lambda.$(VERSION).zip ./
+	cd code/driver/ && npm i && zip -r ../../dist/driver_lambda.$(VERSION).zip ./
 
 build-archiver:
-	cd code/archiver/ && zip -r ../../dist/archiver_lambda.$(VERSION).zip ./
+	cd code/archiver/ && npm i && zip -r ../../dist/archiver_lambda.$(VERSION).zip ./
 
 build: build-cleanup build-worker build-driver build-archiver
 

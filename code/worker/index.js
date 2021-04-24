@@ -67,7 +67,6 @@ const onRequestSuccess = (request, eventbridge, callback, status, data) => {
     request: request,
     customer: "default",
     status: status,
-    data: data,
   };
   sendEvent(
     eventbridge,
