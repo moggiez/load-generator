@@ -1,8 +1,8 @@
-variable "name" {
+variable "lambda" {
 
 }
 
-variable "lambda" {
+variable "api" {
 
 }
 

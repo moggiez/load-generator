@@ -2,11 +2,28 @@
 
 const AWS = require("aws-sdk");
 
+const hardLimit = 100;
+const DEBUG = false;
+
 exports.handler = function (event, context, callback) {
   const headers = {
     "Content-Type": "text/plain",
     "Access-Control-Allow-Origin": "*",
   };
+
+  const response = (status, body, headers) => {
+    const httpResponse = {
+      statusCode: status,
+      body: JSON.stringify(body),
+      headers: headers,
+    };
+    callback(null, httpResponse);
+  };
+
+  if (DEBUG) {
+    response(200, event, headers);
+  }
+
   const body = JSON.parse(event.body);
   const detail = "steps" in body ? body.steps[0] : body;
   try {
@@ -23,39 +40,24 @@ exports.handler = function (event, context, callback) {
     };
     eventbridge.putEvents(params, function (err, data) {
       if (err) {
-        callback(err, {
-          statusCode: 500,
-          body: err,
-          headers: headers,
-        });
+        response;
+        500, err, headers;
       } else {
         if (data.FailedEntryCount == 0) {
           const message = {
             triggeredRule: data.RuleArn,
             message: "Successfully called Moggiez Driver",
           };
-          callback(null, {
-            statusCode: 200,
-            body: JSON.stringify(message),
-            headers: headers,
-          });
+          response(200, message, headers);
         } else {
           const errPayload = {
             data: data,
           };
-          callback(null, {
-            statusCode: 500,
-            body: JSON.stringify(errPayload),
-            headers: headers,
-          });
+          response(500, errPayload, headers);
         }
       }
     });
   } catch (exc) {
-    callback(exc, {
-      statusCode: 500,
-      body: exc,
-      headers: headers,
-    });
+    response(500, exc, headers);
   }
 };
