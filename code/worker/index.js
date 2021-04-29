@@ -1,78 +1,37 @@
 "use strict";
 
 const AWS = require("aws-sdk");
-const http = require("http");
-const axios = require("axios");
+const requests = require("./requests");
+const events = require("./events");
 const name = "Worker";
 
-const makeRequest = (options, onSuccess, onError) => {
-  const processResponse = (res) => {
-    let buffer = "";
-    res.on("data", (chunk) => (buffer += chunk));
-    res.on("end", () => onSuccess(res.statusCode, buffer));
-  };
-  const req = http.request(options, processResponse);
-  req.on("error", (e) => onError(e.message));
-  req.end();
+const terminateWithSuccess = (callback, data) => {
+  callback(null, data);
 };
 
-const getPortString = (options) => {
-  const portString = "";
-  if (options.protocol.toLowerCase() == "http" && options.port != 80) {
-    portString = `:${options.port}`;
-  }
-  if (options.protocol.toLowerCase() == "https" && options.port != 443) {
-    portString = `:${options.port}`;
-  }
-  return portString;
+const terminateWithFailure = (callback, err) => {
+  callback(err, null);
 };
 
-const makeRequestAxiosGet = (options, onSuccess, onError) => {
-  const url = `${options.protocol}://${options.hostname}${getPortString(
-    options
-  )}/${options.path}`;
-  axios
-    .get(url)
-    .then((response) => onSuccess(response))
-    .catch((error) => onError(error));
-};
-
-const sendEvent = (eventbridge, eventParams, onSuccess, onFailure) => {
-  console.log("Sending event", eventParams);
-  eventbridge.putEvents(eventParams, (err, data) => {
-    if (err) {
-      console.log("Failed sending events", err);
-      onFailure(err);
-    } else {
-      onSuccess(data.ruleArn);
-    }
-  });
-};
-
-const buildEventParams = (source, type, payload) => {
-  return {
-    Entries: [
-      {
-        Source: source,
-        DetailType: type,
-        Detail: JSON.stringify(payload),
-        EventBusName: "moggiez-load-test",
-      },
-    ],
-  };
-};
-
-const onRequestSuccess = (request, eventbridge, callback, status, data) => {
+const onRequestSuccess = (
+  request,
+  eventbridge,
+  callback,
+  status,
+  data,
+  terminate
+) => {
   const payload = {
     request: request,
     customer: "default",
     status: status,
+    responseTime: data,
   };
-  sendEvent(
+  events.sendEvent(
     eventbridge,
-    buildEventParams(name, "Worker Request Success", payload),
-    (data) => callback(null, data),
-    (err) => callback(err, null)
+    events.buildEventParams(name, "Worker Request Success", payload),
+    (data) => (terminate ? terminateWithSuccess(callback, data) : null),
+    (err) => terminateWithFailure(callback, err)
   );
 };
 
@@ -82,11 +41,11 @@ const onRequestFailure = (request, eventbridge, callback, error) => {
     customer: "default",
     error: error,
   };
-  sendEvent(
+  events.sendEvent(
     eventbridge,
-    buildEventParams(name, "Worker Request Failure", payload),
-    (data) => callback(null, data),
-    (err) => callback(err, null)
+    events.buildEventParams(name, "Worker Request Failure", payload),
+    (data) => terminateWithSuccess(callback, data),
+    (err) => terminateWithFailure(callback, err)
   );
 };
 
@@ -97,34 +56,40 @@ exports.handler = function (event, context, callback) {
     if ("request" in event.detail) {
       const request = event.detail.request;
       const options = request.options;
-      makeRequest(
+      requests.makeRequest(
         options,
         (status, data) =>
-          onRequestSuccess(request, eventbridge, callback, status, data),
+          onRequestSuccess(request, eventbridge, callback, status, data, true),
         (error) => onRequestFailure(request, eventbridge, callback, error)
       );
     } else {
-      let i = 0;
-      while (i < event.detail.repeats) {
-        makeRequestAxiosGet(
-          event.detail.requestOptions,
+      const requestOptions = event.detail.requestOptions;
+      const waitBetweenRequests = event.detail.wait * 1000;
+      const repeatRequest = event.detail.repeats;
+      const doAndWait = (iteration, maxIterations, wait) => {
+        requests.makeRequestAxiosGet(
+          requestOptions,
           (response) =>
             onRequestSuccess(
               event.detail,
               eventbridge,
               callback,
               response.status,
-              response.data
+              response.responseTime,
+              iteration >= maxIterations
             ),
-          (error) =>
-            onRequestFailure(event.detail, eventbridge, callback, error)
+          (err) => onRequestFailure(event.detail, eventbridge, callback, err)
         );
-        i++;
-        // Sleep event.detail.wait here
-      }
+
+        const curry = () => doAndWait(iteration + 1, maxIterations, wait);
+
+        if (iteration + 1 < maxIterations) {
+          setTimeout(curry, wait);
+        }
+      };
+      doAndWait(0, repeatRequest, waitBetweenRequests);
     }
   } catch (exc) {
-    console.log("Error", exc);
-    callback(exc, null);
+    terminateWithFailure(callback, exc);
   }
 };

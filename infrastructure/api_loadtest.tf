@@ -1,6 +1,6 @@
 locals {
-  stages = toset(["v1", "blue", "green"])
-  stage  = "green"
+  stages = toset(["blue", "green"])
+  stage  = "blue"
 }
 
 resource "aws_api_gateway_rest_api" "_" {

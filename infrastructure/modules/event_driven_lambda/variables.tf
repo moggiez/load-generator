@@ -21,3 +21,8 @@ variable "key" {
 variable "policies" {
   type = list(any)
 }
+
+variable "timeout" {
+  type    = number
+  default = 3
+}

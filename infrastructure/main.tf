@@ -91,6 +91,7 @@ module "worker" {
   function_name = "MoggiezWorker"
   key           = "worker_lambda"
   s3_bucket     = aws_s3_bucket.moggiez_lambdas
+  timeout       = 60
   dist_dir      = var.dist_dir
   dist_version  = var.dist_version
   policies      = []

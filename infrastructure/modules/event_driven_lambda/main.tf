@@ -11,6 +11,7 @@ resource "aws_lambda_function" "moggiez_worker_fn" {
   function_name = var.function_name
   s3_bucket     = var.s3_bucket.bucket
   s3_key        = aws_s3_bucket_object.lambda_s3_object.key
+  timeout       = var.timeout
 
   handler          = "index.handler"
   runtime          = "nodejs14.x"
