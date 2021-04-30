@@ -1,9 +1,8 @@
 "use strict";
 
-const AWS = require("aws-sdk");
 const requests = require("./requests");
 const events = require("./events");
-const name = "Worker";
+const eventTypes = require("./eventTypes");
 
 const terminateWithSuccess = (callback, data) => {
   callback(null, data);
@@ -13,37 +12,29 @@ const terminateWithFailure = (callback, err) => {
   callback(err, null);
 };
 
-const onRequestSuccess = (
-  request,
-  eventbridge,
-  callback,
-  status,
-  data,
-  terminate
-) => {
+const onRequestSuccess = (request, callback, result, terminate) => {
   const payload = {
     request: request,
     customer: "default",
-    status: status,
-    responseTime: data,
+    result: result,
   };
   events.sendEvent(
-    eventbridge,
-    events.buildEventParams(name, "Worker Request Success", payload),
+    eventTypes.WORKER_SUCCESS_EVENT_TYPE,
+    payload,
     (data) => (terminate ? terminateWithSuccess(callback, data) : null),
     (err) => terminateWithFailure(callback, err)
   );
 };
 
-const onRequestFailure = (request, eventbridge, callback, error) => {
+const onRequestFailure = (request, callback, error) => {
   const payload = {
     request: request,
     customer: "default",
     error: error,
   };
   events.sendEvent(
-    eventbridge,
-    events.buildEventParams(name, "Worker Request Failure", payload),
+    eventTypes.WORKER_FAILURE_EVENT_TYPE,
+    payload,
     (data) => terminateWithSuccess(callback, data),
     (err) => terminateWithFailure(callback, err)
   );
@@ -51,16 +42,14 @@ const onRequestFailure = (request, eventbridge, callback, error) => {
 
 exports.handler = function (event, context, callback) {
   try {
-    const eventbridge = new AWS.EventBridge();
-
     if ("request" in event.detail) {
       const request = event.detail.request;
       const options = request.options;
       requests.makeRequest(
         options,
         (status, data) =>
-          onRequestSuccess(request, eventbridge, callback, status, data, true),
-        (error) => onRequestFailure(request, eventbridge, callback, error)
+          onRequestSuccess(request, callback, status, data, true),
+        (error) => onRequestFailure(request, callback, error)
       );
     } else {
       const requestOptions = event.detail.requestOptions;
@@ -72,13 +61,18 @@ exports.handler = function (event, context, callback) {
           (response) =>
             onRequestSuccess(
               event.detail,
-              eventbridge,
               callback,
-              response.status,
-              response.responseTime,
+              {
+                status: response.status,
+                responseTime: response.responseTime,
+                startedAt: new Date(
+                  response.config.meta.requestStartedAt
+                ).toISOString(),
+                endedAt: new Date(response.requestEndedAt).toISOString(),
+              },
               iteration >= maxIterations
             ),
-          (err) => onRequestFailure(event.detail, eventbridge, callback, err)
+          (err) => onRequestFailure(event.detail, callback, err)
         );
 
         const curry = () => doAndWait(iteration + 1, maxIterations, wait);

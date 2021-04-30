@@ -1,3 +1,5 @@
+"use strict";
+
 const http = require("http");
 const axios = require("axios");
 
@@ -8,6 +10,7 @@ axios.interceptors.request.use((x) => {
 });
 
 axios.interceptors.response.use((x) => {
+  x.requestEndedAt = new Date().getTime();
   x.responseTime = new Date().getTime() - x.config.meta.requestStartedAt;
   return x;
 });

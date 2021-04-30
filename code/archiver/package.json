@@ -1,0 +1,10 @@
+{
+  "name": "load-generator-s3-archiver",
+  "version": "0.1.0",
+  "private": true,
+  "keywords": [
+    "moggiez"
+  ],
+  "dependencies": {},
+  "scripts": {}
+}

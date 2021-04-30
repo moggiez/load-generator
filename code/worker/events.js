@@ -1,6 +1,26 @@
-const eventBusName = "moggiez-load-test";
+"use strict";
 
-const sendEvent = (eventbridge, eventParams, onSuccess, onFailure) => {
+const AWS = require("aws-sdk");
+const eventbridge = new AWS.EventBridge();
+
+const EVENT_BUS_NAME = "moggiez-load-test";
+const EVENT_SOURCE = "Worker";
+
+const buildEventParams = (type, payload) => {
+  return {
+    Entries: [
+      {
+        Source: EVENT_SOURCE,
+        DetailType: type,
+        Detail: JSON.stringify(payload),
+        EventBusName: EVENT_BUS_NAME,
+      },
+    ],
+  };
+};
+
+const sendEvent = (type, payload, onSuccess, onFailure) => {
+  const eventParams = buildEventParams(type, payload);
   eventbridge.putEvents(eventParams, (err, data) => {
     if (err) {
       onFailure(err);
@@ -10,18 +30,4 @@ const sendEvent = (eventbridge, eventParams, onSuccess, onFailure) => {
   });
 };
 
-const buildEventParams = (source, type, payload) => {
-  return {
-    Entries: [
-      {
-        Source: source,
-        DetailType: type,
-        Detail: JSON.stringify(payload),
-        EventBusName: eventBusName,
-      },
-    ],
-  };
-};
-
-exports.buildEventParams = buildEventParams;
 exports.sendEvent = sendEvent;

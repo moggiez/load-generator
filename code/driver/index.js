@@ -1,6 +1,8 @@
 "use strict";
 
-const AWS = require("aws-sdk");
+const events = require("./events");
+const uuid = require("uuid");
+const short = require("short-uuid");
 
 const hardLimit = 100;
 const DEBUG = false;
@@ -26,37 +28,22 @@ exports.handler = function (event, context, callback) {
 
   const body = JSON.parse(event.body);
   const detail = "steps" in body ? body.steps[0] : body;
+
+  const usersCount = detail["users"];
+  const userCallParams = { ...detail };
+  delete userCallParams["users"];
+
   try {
-    const eventbridge = new AWS.EventBridge();
-    const params = {
-      Entries: [
-        {
-          Source: "Driver",
-          DetailType: "User Calls",
-          Detail: JSON.stringify(detail),
-          EventBusName: "moggiez-load-test",
-        },
-      ],
-    };
-    eventbridge.putEvents(params, function (err, data) {
-      if (err) {
-        response;
-        500, err, headers;
-      } else {
-        if (data.FailedEntryCount == 0) {
-          const message = {
-            triggeredRule: data.RuleArn,
-            message: "Successfully called Moggiez Driver",
-          };
-          response(200, message, headers);
-        } else {
-          const errPayload = {
-            data: data,
-          };
-          response(500, errPayload, headers);
-        }
-      }
-    });
+    let i = 0;
+    const shortUUIDTranslator = short();
+    while (i < usersCount) {
+      events.triggerUserCalls(
+        shortUUIDTranslator.new(),
+        userCallParams,
+        response
+      );
+      i++;
+    }
   } catch (exc) {
     response(500, exc, headers);
   }
