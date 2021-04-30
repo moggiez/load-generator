@@ -1,35 +1,58 @@
 "use strict";
 
 const s3 = require("./s3");
+const cw = require("./cloudwatch");
 const eventTypes = require("./eventTypes");
 
 exports.handler = function (event, context, callback) {
+  const terminateSuccess = (msg) => {
+    console.log(msg);
+    callback(msg, null);
+  };
+
+  const terminateFailure = (err) => {
+    console.log("Error", err);
+    callback(null, err);
+  };
+
   try {
     if (event["detail-type"] == eventTypes.WORKER_SUCCESS_EVENT_TYPE) {
       s3.saveSuccess(
         event,
-        () => callback("Wrote event to S3 successfully", null),
+        () => {
+          cw.trackResponseTimeMetric(
+            event.detail,
+            (data) =>
+              terminateSuccess(
+                "Event written to S3 and tracker in CloudWatch metrics."
+              ),
+            (err) => terminateFailure(err)
+          );
+        },
         (err) => {
-          console.log("Error", err);
-          callback(null, err);
+          cw.trackResponseTimeMetric(
+            event.detail,
+            (data) =>
+              terminateSuccess(
+                `Event NOT written to S3 (${err}) and tracker in CloudWatch metrics.`
+              ),
+            (err2) => terminateFailure(err2)
+          );
         }
       );
     } else if (event["detail-type"] == eventTypes.WORKER_FAILURE_EVENT_TYPE) {
       s3.saveFailure(
         event,
-        () => callback("Wrote event to S3 successfully", null),
+        () => terminateSuccess("Wrote event to S3 successfully"),
         (err) => {
-          console.log("Error", err);
-          callback(null, err);
+          terminateFailure(err);
         }
       );
     } else {
       const msg = `Wrong event routed to archive lambda: ${event["detail-type"]}`;
-      console.log(msg);
-      callback(msg, null);
+      terminateSuccess(msg);
     }
   } catch (exc) {
-    console.log("Error", exc);
-    callback(exc, null);
+    terminateFailure(exc);
   }
 };

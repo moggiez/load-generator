@@ -10,6 +10,7 @@ resource "aws_lambda_function" "moggiez_driver_fn" {
   function_name = "MoggiezDriver"
   s3_bucket     = var.s3_bucket.bucket
   s3_key        = aws_s3_bucket_object.driver_lambda_s3_object.key
+  timeout       = var.timeout
 
   handler          = "index.handler"
   runtime          = "nodejs14.x"

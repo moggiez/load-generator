@@ -32,12 +32,14 @@ exports.handler = function (event, context, callback) {
   const usersCount = detail["users"];
   const userCallParams = { ...detail };
   delete userCallParams["users"];
+  const shortUUIDTranslator = short();
+  const loadtestId = shortUUIDTranslator.new();
 
   try {
     let i = 0;
-    const shortUUIDTranslator = short();
     while (i < usersCount) {
       events.triggerUserCalls(
+        loadtestId,
         shortUUIDTranslator.new(),
         userCallParams,
         response

@@ -42,26 +42,6 @@ locals {
   }
 }
 
-# Common policies
-resource "aws_iam_policy" "s3_access" {
-  name        = "${var.application}-S3Access"
-  path        = "/"
-  description = "IAM policy for logging from a lambda"
-
-  policy = jsonencode({
-    "Version" : "2012-10-17",
-    "Statement" : [
-      {
-        "Effect" : "Allow",
-        "Action" : [
-          "s3:*"
-        ],
-        "Resource" : "arn:aws:s3:::*"
-      }
-    ]
-  })
-}
-
 # Log groups
 resource "aws_cloudwatch_log_group" "moggiez_worker" {
   name = "/aws/events/moggiez_worker"
@@ -82,6 +62,7 @@ resource "aws_cloudwatch_event_bus" "moggiez_load_test" {
 module "driver" {
   source       = "./modules/driver_lambda"
   s3_bucket    = aws_s3_bucket.moggiez_lambdas
+  timeout      = 60
   dist_dir     = var.dist_dir
   dist_version = var.dist_version
 }
@@ -91,7 +72,7 @@ module "worker" {
   function_name = "MoggiezWorker"
   key           = "worker_lambda"
   s3_bucket     = aws_s3_bucket.moggiez_lambdas
-  timeout       = 60
+  timeout       = 300
   dist_dir      = var.dist_dir
   dist_version  = var.dist_version
   policies      = []
@@ -104,7 +85,7 @@ module "archiver" {
   s3_bucket     = aws_s3_bucket.moggiez_lambdas
   dist_dir      = var.dist_dir
   dist_version  = var.dist_version
-  policies      = [aws_iam_policy.s3_access.arn]
+  policies      = [aws_iam_policy.s3_access.arn, aws_iam_policy.cloudwatch_metrics_access.arn]
 }
 
 # Creates event rules to link together events and lambdas

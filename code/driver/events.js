@@ -13,13 +13,17 @@ const headers = {
   "Access-Control-Allow-Origin": "*",
 };
 
-const triggerUserCalls = (userId, eventParams, response) => {
+const triggerUserCalls = (loadtestId, userId, eventParams, response) => {
   const params = {
     Entries: [
       {
         Source: EVENT_SOURCE,
         DetailType: eventTypes.USER_CALLS_EVENT_TYPE,
-        Detail: JSON.stringify({ ...eventParams, userId: userId }),
+        Detail: JSON.stringify({
+          ...eventParams,
+          loadtestId: loadtestId,
+          userId: userId,
+        }),
         EventBusName: EVENT_BUS_NAME,
       },
     ],
