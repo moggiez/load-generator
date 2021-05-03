@@ -18,7 +18,7 @@ build-archiver:
 build: build-cleanup build-worker build-driver build-archiver
 
 infra-init:
-	cd infrastructure && terraform init -force-copy -backend-config="bucket=moggiez-terraform-state-backend" -backend-config="dynamodb_table=moggiez-terraform_state" -backend-config="key=terraform.state" -backend-config="region=eu-west-1"
+	cd infrastructure && terraform init -force-copy -backend-config="bucket=moggies.io-terraform-state-backend" -backend-config="dynamodb_table=moggies.io-load-generator-terraform_state" -backend-config="key=load-generator-terraform.state" -backend-config="region=eu-west-1"
 
 infra-debug:
 	cd infrastructure && TF_LOG=DEBUG terraform apply -auto-approve infra
