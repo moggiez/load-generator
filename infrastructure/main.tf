@@ -18,7 +18,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "moggiez_lambdas" {
-  bucket = "moggiez-lambdas"
+  bucket = "moggies.io-lambdas"
   acl    = "private"
 
   tags = {

@@ -11,5 +11,5 @@ variable "api" {
 }
 
 variable "api_stage_name" {
-
+  type = string
 }

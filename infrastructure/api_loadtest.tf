@@ -8,6 +8,13 @@ resource "aws_api_gateway_rest_api" "_" {
   description = "Loadtest API Gateway"
 }
 
+resource "aws_api_gateway_authorizer" "_" {
+  name          = "MoggiesUserAuthorizer"
+  rest_api_id   = aws_api_gateway_rest_api._.id
+  type          = "COGNITO_USER_POOLS"
+  provider_arns = ["arn:aws:cognito-idp:${var.region}:${var.account}:userpool/${var.user_pool_id}"]
+}
+
 # LoadtestAPIs
 module "gateway_to_driver_lambda" {
   source             = "./modules/lambda_gateway"
@@ -15,6 +22,7 @@ module "gateway_to_driver_lambda" {
   lambda             = module.driver.lambda
   resource_path_part = "loadtest"
   api                = aws_api_gateway_rest_api._
+  authorizer         = aws_api_gateway_authorizer._
 }
 
 module "gateway_cors" {

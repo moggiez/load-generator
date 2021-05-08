@@ -14,3 +14,7 @@ variable "http_method" {
   type    = string
   default = "GET"
 }
+
+variable "authorizer" {
+  default = null
+}
