@@ -21,7 +21,7 @@ const saveToS3 = (event, bucket, key, onSuccess, onFailure) => {
     region: event.region,
     source: event.source,
   };
-  var params = {
+  const params = {
     Bucket: bucket,
     Key: key,
     Body: JSON.stringify(data),
