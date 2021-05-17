@@ -37,7 +37,7 @@ resource "aws_lambda_permission" "apigw" {
   action        = "lambda:InvokeFunction"
   function_name = module.driver.lambda.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn = "${aws_api_gateway_rest_api._.execution_arn}/*/*"
+  source_arn    = "${aws_api_gateway_rest_api._.execution_arn}/*/*"
 }
 
 # Deployment of the API Gateway
@@ -52,7 +52,7 @@ resource "aws_api_gateway_deployment" "gateway_deployment" {
   rest_api_id = aws_api_gateway_rest_api._.id
   description = each.value
 
-  
+
 
 
   lifecycle {
