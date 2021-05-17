@@ -1,30 +1,22 @@
 "use strict";
 
 const events = require("./events");
+const config = require("./config");
+const helpers = require("./lambda_helpers");
+const auth = require("./cognitoAuth");
 const uuid = require("uuid");
 const short = require("short-uuid");
 
 const hardLimit = 100;
-const DEBUG = false;
 
 exports.handler = function (event, context, callback) {
-  const headers = {
-    "Content-Type": "text/plain",
-    "Access-Control-Allow-Origin": "*",
-  };
+  const response = helpers.getResponseFn(callback);
 
-  const response = (status, body, headers) => {
-    const httpResponse = {
-      statusCode: status,
-      body: JSON.stringify(body),
-      headers: headers,
-    };
-    callback(null, httpResponse);
-  };
-
-  if (DEBUG) {
+  if (config.DEBUG) {
     response(200, event, headers);
   }
+
+  const user = auth.getUserFromEvent(event);
 
   const body = JSON.parse(event.body);
   const detail = "steps" in body ? body.steps[0] : body;

@@ -4,8 +4,8 @@ locals {
 }
 
 resource "aws_api_gateway_rest_api" "_" {
-  name        = "LoadtestAPI"
-  description = "Loadtest API Gateway"
+  name        = "RunLoadtestAPI"
+  description = "Run Loadtest API Gateway"
 }
 
 resource "aws_api_gateway_authorizer" "_" {
@@ -20,7 +20,7 @@ module "gateway_to_driver_lambda" {
   source             = "./modules/lambda_gateway"
   http_method        = "POST"
   lambda             = module.driver.lambda
-  resource_path_part = "loadtest"
+  resource_path_part = "run"
   api                = aws_api_gateway_rest_api._
   authorizer         = aws_api_gateway_authorizer._
 }
@@ -37,9 +37,6 @@ resource "aws_lambda_permission" "apigw" {
   action        = "lambda:InvokeFunction"
   function_name = module.driver.lambda.function_name
   principal     = "apigateway.amazonaws.com"
-
-  # The "/*/*" portion grants access from any method on any resource
-  # within the API Gateway REST API.
   source_arn = "${aws_api_gateway_rest_api._.execution_arn}/*/*"
 }
 
@@ -55,8 +52,15 @@ resource "aws_api_gateway_deployment" "gateway_deployment" {
   rest_api_id = aws_api_gateway_rest_api._.id
   description = each.value
 
+  
+
+
   lifecycle {
     create_before_destroy = true
+  }
+
+  triggers = {
+    redeployment = sha1("${timestamp()}")
   }
 }
 
