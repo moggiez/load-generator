@@ -16,9 +16,13 @@ resource "aws_api_gateway_authorizer" "_" {
 }
 
 # LoadtestAPIs
+locals {
+  http_methods = toset(["POST"])
+}
+
 module "gateway_to_driver_lambda" {
-  source             = "./modules/lambda_gateway"
-  http_method        = "POST"
+  source             = "github.com/moggiez/terraform-modules/lambda_gateway"
+  http_methods       = local.http_methods
   lambda             = module.driver.lambda
   resource_path_part = "run"
   api                = aws_api_gateway_rest_api._
@@ -26,7 +30,7 @@ module "gateway_to_driver_lambda" {
 }
 
 module "gateway_cors" {
-  source          = "./modules/api_gateway_enable_cors"
+  source          = "github.com/moggiez/terraform-modules/api_gateway_enable_cors"
   api_id          = aws_api_gateway_rest_api._.id
   api_resource_id = module.gateway_to_driver_lambda.api_resource.id
 }
@@ -38,6 +42,15 @@ resource "aws_lambda_permission" "apigw" {
   function_name = module.driver.lambda.function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api._.execution_arn}/*/*"
+}
+
+module "driver_lambda_api_proxy" {
+  source              = "github.com/moggiez/terraform-modules/api_resource_proxy"
+  api                 = aws_api_gateway_rest_api._
+  http_methods        = local.http_methods
+  parent_api_resource = module.gateway_to_driver_lambda.api_resource
+  lambda              = module.driver.lambda
+  authorizer          = aws_api_gateway_authorizer._
 }
 
 # Deployment of the API Gateway
@@ -77,7 +90,7 @@ resource "aws_api_gateway_stage" "loadtest_api_stage" {
 }
 
 module "playbook_api_subdomain_mapping" {
-  source         = "./modules/api_subdomain_mapping"
+  source         = "github.com/moggiez/terraform-modules/api_subdomain_mapping"
   api            = aws_api_gateway_rest_api._
   api_stage_name = local.stage
   domain_name    = "moggies.io"

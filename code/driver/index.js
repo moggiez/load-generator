@@ -13,7 +13,7 @@ exports.handler = function (event, context, callback) {
   const response = helpers.getResponseFn(callback);
 
   if (config.DEBUG) {
-    response(200, event, headers);
+    response(200, event, config.headers);
   }
 
   const user = auth.getUserFromEvent(event);
@@ -39,6 +39,6 @@ exports.handler = function (event, context, callback) {
       i++;
     }
   } catch (exc) {
-    response(500, exc, headers);
+    response(500, exc, config.headers);
   }
 };
