@@ -1,5 +1,5 @@
 module "driver" {
-  source       = "github.com/moggiez/terraform-modules/driver_lambda"
+  source       = "git@github.com:moggiez/terraform-modules.git//driver_lambda"
   s3_bucket    = aws_s3_bucket.moggiez_lambdas
   timeout      = 60
   dist_dir     = var.dist_dir
@@ -7,7 +7,7 @@ module "driver" {
 }
 
 module "worker" {
-  source        = "github.com/moggiez/terraform-modules/event_driven_lambda"
+  source        = "git@github.com:moggiez/terraform-modules.git//event_driven_lambda"
   function_name = "MoggiezWorker"
   key           = "worker_lambda"
   s3_bucket     = aws_s3_bucket.moggiez_lambdas
@@ -18,7 +18,7 @@ module "worker" {
 }
 
 module "archiver" {
-  source        = "github.com/moggiez/terraform-modules/event_driven_lambda"
+  source        = "git@github.com:moggiez/terraform-modules.git//event_driven_lambda"
   function_name = "MoggiezArchiver"
   key           = "archiver_lambda"
   s3_bucket     = aws_s3_bucket.moggiez_lambdas

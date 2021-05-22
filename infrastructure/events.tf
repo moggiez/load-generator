@@ -1,6 +1,6 @@
 # Creates event rules to link together events and lambdas
 module "worker_source_to_log_group" {
-  source       = "github.com/moggiez/terraform-modules/eventrules_source_to_log_group"
+  source       = "git@github.com:moggiez/terraform-modules.git//eventrules_source_to_log_group"
   application  = var.application
   account      = var.account
   eventbus     = aws_cloudwatch_event_bus.moggiez_load_test
@@ -9,7 +9,7 @@ module "worker_source_to_log_group" {
 }
 
 module "driver_source_to_log_group" {
-  source       = "github.com/moggiez/terraform-modules/eventrules_source_to_log_group"
+  source       = "git@github.com:moggiez/terraform-modules.git//eventrules_source_to_log_group"
   application  = var.application
   account      = var.account
   eventbus     = aws_cloudwatch_event_bus.moggiez_load_test
@@ -18,7 +18,7 @@ module "driver_source_to_log_group" {
 }
 
 module "archiver_source_to_log_group" {
-  source       = "github.com/moggiez/terraform-modules/eventrules_source_to_log_group"
+  source       = "git@github.com:moggiez/terraform-modules.git//eventrules_source_to_log_group"
   application  = var.application
   account      = var.account
   eventbus     = aws_cloudwatch_event_bus.moggiez_load_test
@@ -27,7 +27,7 @@ module "archiver_source_to_log_group" {
 }
 
 module "user_call_event_to_lambda" {
-  source       = "github.com/moggiez/terraform-modules/eventrules_detail_type_to_lambda"
+  source       = "git@github.com:moggiez/terraform-modules.git//eventrules_detail_type_to_lambda"
   application  = var.application
   name         = "catch-type-to-lambda"
   account      = var.account
@@ -38,7 +38,7 @@ module "user_call_event_to_lambda" {
 }
 
 module "worker_result_event_to_lambda" {
-  source       = "github.com/moggiez/terraform-modules/eventrules_detail_type_to_lambda"
+  source       = "git@github.com:moggiez/terraform-modules.git//eventrules_detail_type_to_lambda"
   application  = var.application
   name         = "catch-worker-results-to-lambda"
   account      = var.account

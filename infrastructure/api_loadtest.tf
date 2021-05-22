@@ -21,7 +21,7 @@ locals {
 }
 
 module "gateway_to_driver_lambda" {
-  source             = "github.com/moggiez/terraform-modules/lambda_gateway"
+  source             = "git@github.com:moggiez/terraform-modules.git//lambda_gateway"
   http_methods       = local.http_methods
   lambda             = module.driver.lambda
   resource_path_part = "run"
@@ -30,7 +30,7 @@ module "gateway_to_driver_lambda" {
 }
 
 module "gateway_cors" {
-  source          = "github.com/moggiez/terraform-modules/api_gateway_enable_cors"
+  source          = "git@github.com:moggiez/terraform-modules.git//api_gateway_enable_cors"
   api_id          = aws_api_gateway_rest_api._.id
   api_resource_id = module.gateway_to_driver_lambda.api_resource.id
 }
@@ -45,7 +45,7 @@ resource "aws_lambda_permission" "apigw" {
 }
 
 module "driver_lambda_api_proxy" {
-  source              = "github.com/moggiez/terraform-modules/api_resource_proxy"
+  source              = "git@github.com:moggiez/terraform-modules.git//api_resource_proxy"
   api                 = aws_api_gateway_rest_api._
   http_methods        = local.http_methods
   parent_api_resource = module.gateway_to_driver_lambda.api_resource
@@ -90,7 +90,7 @@ resource "aws_api_gateway_stage" "loadtest_api_stage" {
 }
 
 module "playbook_api_subdomain_mapping" {
-  source         = "github.com/moggiez/terraform-modules/api_subdomain_mapping"
+  source         = "git@github.com:moggiez/terraform-modules.git//api_subdomain_mapping"
   api            = aws_api_gateway_rest_api._
   api_stage_name = local.stage
   domain_name    = "moggies.io"
