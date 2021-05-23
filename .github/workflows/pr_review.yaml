@@ -52,11 +52,7 @@ jobs:
         with:
           node-version: "14"
 
-      # Build the lambda packages
-      - name: Build lambda packages
-        run: make build
-
-      # Generates an execution plan for Terraform
+      # Builds the lambda packages and generates an execution plan for Terraform
       - name: Preview deployment
         run: make preview
         env:

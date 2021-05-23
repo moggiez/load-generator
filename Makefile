@@ -1,5 +1,3 @@
-VERSION=$(shell cat version.txt)
-
 version-build:
 	./increment_version.sh
 
@@ -9,16 +7,8 @@ build-cleanup:
 modules-cleanup:
 	cd infrastructure && rm -rf .terraform/modules
 
-build-worker:
-	cd code/worker/ && npm i && zip -r ../../dist/worker_lambda.$(VERSION).zip ./
-
-build-driver:
-	cd code/driver/ && npm i && zip -r ../../dist/driver_lambda.$(VERSION).zip ./
-
-build-archiver:
-	cd code/archiver/ && npm i && zip -r ../../dist/archiver_lambda.$(VERSION).zip ./
-
-build: build-cleanup build-worker build-driver build-archiver
+build: build-cleanup
+	./scripts/package_all.sh
 
 infra-init:
 	cd infrastructure && terraform init -force-copy -backend-config="bucket=moggies.io-terraform-state-backend" -backend-config="dynamodb_table=moggies.io-load-generator-terraform_state" -backend-config="key=load-generator-terraform.state" -backend-config="region=eu-west-1"
@@ -27,10 +17,10 @@ infra-debug:
 	cd infrastructure && TF_LOG=DEBUG terraform apply -auto-approve infra
 
 deploy: build modules-cleanup
-	cd infrastructure && terraform init && TF_VAR_dist_version=$(VERSION) terraform apply -auto-approve
+	cd infrastructure && terraform init && terraform apply -auto-approve
 
 preview: build modules-cleanup
-	cd infrastructure && terraform init && TF_VAR_dist_version=$(VERSION) terraform plan
+	cd infrastructure && terraform init && terraform plan
 
 fmt:
 	cd infrastructure && terraform fmt -recursive
