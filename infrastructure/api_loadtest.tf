@@ -65,9 +65,6 @@ resource "aws_api_gateway_deployment" "gateway_deployment" {
   rest_api_id = aws_api_gateway_rest_api._.id
   description = each.value
 
-
-
-
   lifecycle {
     create_before_destroy = true
   }

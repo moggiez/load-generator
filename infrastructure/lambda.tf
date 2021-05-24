@@ -1,8 +1,19 @@
 module "driver" {
-  source    = "git@github.com:moggiez/terraform-modules.git//driver_lambda"
+  source    = "git@github.com:moggiez/terraform-modules.git//lambda_with_dynamo"
+  name      = "driver_lambda"
+  dist_dir  = var.dist_dir
   s3_bucket = aws_s3_bucket.moggiez_lambdas
   timeout   = 60
-  dist_dir  = var.dist_dir
+  policies = [
+    aws_iam_policy.eventbridge_events.arn,
+    aws_iam_policy.dynamodb_access_policy_loadtests.arn,
+    aws_iam_policy.dynamodb_access_policy_playbooks.arn
+  ]
+  layers = [
+    data.aws_lambda_layer_version.db.arn,
+    data.aws_lambda_layer_version.auth.arn,
+    data.aws_lambda_layer_version.lambda_helpers.arn
+  ]
 }
 
 module "worker" {
