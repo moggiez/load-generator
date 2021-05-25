@@ -13,7 +13,10 @@
         "dynamodb:PutItem",
         "dynamodb:UpdateItem"
       ],
-      "Resource": "arn:aws:dynamodb:*:*:table/${table}"
+      "Resource": [
+        "arn:aws:dynamodb:*:*:table/${table}",
+        "arn:aws:dynamodb:*:*:table/${table}/index/*"
+      ]
     },
     {
       "Sid": "GetStreamRecords",

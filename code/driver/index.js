@@ -1,11 +1,10 @@
 "use strict";
+const helpers = require("lambda_helpers");
+const auth = require("cognitoAuth");
 
 const events = require("./events");
 const config = require("./config");
-const helpers = require("./lambda_helpers");
-const auth = require("./cognitoAuth");
-const uuid = require("uuid");
-const short = require("short-uuid");
+const handlers = require("./handlers");
 
 const hardLimit = 100;
 
@@ -17,28 +16,26 @@ exports.handler = function (event, context, callback) {
   }
 
   const user = auth.getUserFromEvent(event);
-
-  const body = JSON.parse(event.body);
-  const detail = "steps" in body ? body.steps[0] : body;
-
-  const usersCount = detail["users"];
-  const userCallParams = { ...detail };
-  delete userCallParams["users"];
-  const shortUUIDTranslator = short();
-  const loadtestId = shortUUIDTranslator.new();
-
-  try {
-    let i = 0;
-    while (i < usersCount) {
-      events.triggerUserCalls(
-        loadtestId,
-        shortUUIDTranslator.new(),
-        userCallParams,
-        response
-      );
-      i++;
-    }
-  } catch (exc) {
-    response(500, exc, config.headers);
+  const httpMethod = event.httpMethod;
+  const pathParameters = event.pathParameters;
+  const pathParams =
+    pathParameters != null && "proxy" in pathParameters && pathParameters.proxy
+      ? pathParameters.proxy.split("/")
+      : [];
+  const loadtestId = pathParams[0];
+  if (httpMethod == "POST") {
+    //const detail = "steps" in body ? body.steps[0] : body;
+    handlers
+      .getLoadtest(user, loadtestId, response)
+      .then((data) => {
+        console.log("getLoadtest", data);
+        response(200, data, config.headers);
+      })
+      .catch((err) => {
+        console.log("getLoadtest error", err);
+        response(500, "Internal server err", config.headers);
+      });
+  } else {
+    response(403, "Not supported.", config.headers);
   }
 };

@@ -7,7 +7,8 @@ module "driver" {
   policies = [
     aws_iam_policy.eventbridge_events.arn,
     aws_iam_policy.dynamodb_access_policy_loadtests.arn,
-    aws_iam_policy.dynamodb_access_policy_playbooks.arn
+    aws_iam_policy.dynamodb_access_policy_playbooks.arn,
+    aws_iam_policy.dynamodb_access_policy_organisations.arn
   ]
   layers = [
     data.aws_lambda_layer_version.db.arn,

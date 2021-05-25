@@ -57,3 +57,10 @@ resource "aws_iam_policy" "dynamodb_access_policy_playbooks" {
 
   policy = templatefile("templates/dynamo_access_policy.json", { table = "playbooks" })
 }
+
+resource "aws_iam_policy" "dynamodb_access_policy_organisations" {
+  name = "lambda_access_dynamodb_policy_organisations"
+  path = "/"
+
+  policy = templatefile("templates/dynamo_access_policy.json", { table = "organisations" })
+}
