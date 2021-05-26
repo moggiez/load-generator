@@ -49,7 +49,11 @@ const setLoadtestState = (loadtest, newState) => {
   delete updated.OrganisationId;
   delete updated.LoadtestId;
   updated["CurrentState"] = newState;
-  loadtests.update(loadtest.OrganisationId, loadtest.LoadtestId, updated);
+  return loadtests.update(
+    loadtest.OrganisationId,
+    loadtest.LoadtestId,
+    updated
+  );
 };
 
 exports.runPlaybook = (user, playbook, loadtest, response) => {
@@ -69,8 +73,15 @@ exports.runPlaybook = (user, playbook, loadtest, response) => {
 
     events
       .triggerUserCalls()
-      .then((data) => response(200, data, config.headers))
-      .catch((err) => response(500, err, config.headers));
+      .then((data) => {
+        setLoadtestState(loadtest, "Running")
+          .catch((err) => console.log(err))
+          .finally((data) => response(200, data, config.headers));
+      })
+      .catch((err) => {
+        console.log(err);
+        response(500, err, config.headers);
+      });
   } catch (exc) {
     console.log(exc);
     response(500, exc, config.headers);

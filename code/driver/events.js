@@ -14,7 +14,6 @@ const params = {
 };
 
 exports.addUserCall = (loadtestId, userId, eventParams) => {
-  console.log("addUserCall");
   const event = {
     Source: EVENT_SOURCE,
     DetailType: eventTypes.USER_CALLS_EVENT_TYPE,
