@@ -28,8 +28,8 @@ exports.handler = function (event, context, callback) {
     handlers
       .getLoadtest(user, loadtestId, response)
       .then((data) => {
-        console.log("getLoadtest", data);
-        response(200, data, config.headers);
+        const playbook = JSON.parse(data.playbook.Playbook);
+        handlers.runPlaybook(user, playbook, data.loadtest, response);
       })
       .catch((err) => {
         console.log("getLoadtest error", err);

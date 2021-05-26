@@ -44,25 +44,35 @@ exports.getLoadtest = (user, loadtestId, response) => {
   });
 };
 
-exports.go = (detail, response) => {
+const setLoadtestState = (loadtest, newState) => {
+  const updated = { ...loadtest };
+  delete updated.OrganisationId;
+  delete updated.LoadtestId;
+  updated["CurrentState"] = newState;
+  loadtests.update(loadtest.OrganisationId, loadtest.LoadtestId, updated);
+};
+
+exports.runPlaybook = (user, playbook, loadtest, response) => {
+  const detail = playbook.steps[0];
   const usersCount = detail["users"];
   const userCallParams = { ...detail };
   delete userCallParams["users"];
-  const shortUUIDTranslator = short();
-  const loadtestId = shortUUIDTranslator.new();
+
+  setLoadtestState(loadtest, "Started");
 
   try {
     let i = 0;
     while (i < usersCount) {
-      events.triggerUserCalls(
-        loadtestId,
-        shortUUIDTranslator.new(),
-        userCallParams,
-        response
-      );
+      events.addUserCall(loadtest.LoadtestId, user.id, userCallParams);
       i++;
     }
+
+    events
+      .triggerUserCalls()
+      .then((data) => response(200, data, config.headers))
+      .catch((err) => response(500, err, config.headers));
   } catch (exc) {
+    console.log(exc);
     response(500, exc, config.headers);
   }
 };
