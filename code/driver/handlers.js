@@ -8,6 +8,13 @@ const organisations = new db.Table(db.tableConfigs.organisations);
 const loadtests = new db.Table(db.tableConfigs.loadtests);
 const playbooks = new db.Table(db.tableConfigs.playbooks);
 
+const loadtestStates = {
+  STARTED: "Started",
+  RUNNING: "Running",
+  COMPLETED: "Completed",
+  ABORTED: "Aborted",
+};
+
 exports.getLoadtest = (user, loadtestId, response) => {
   const onError = (e) => {
     response(500, "Internal server error.", config.headers);
@@ -49,6 +56,15 @@ const setLoadtestState = (loadtest, newState) => {
   delete updated.OrganisationId;
   delete updated.LoadtestId;
   updated["CurrentState"] = newState;
+  if (newState == loadtestStates.STARTED) {
+    updated["StartDate"] = new Date().toISOString();
+  } else if (
+    newState == loadtestStates.COMPLETED ||
+    newState == loadtestStates.ABORTED
+  ) {
+    updated["EndDate"] = new Date().toISOString();
+  }
+
   return loadtests.update(
     loadtest.OrganisationId,
     loadtest.LoadtestId,
@@ -62,7 +78,7 @@ exports.runPlaybook = (user, playbook, loadtest, response) => {
   const userCallParams = { ...detail };
   delete userCallParams["users"];
 
-  setLoadtestState(loadtest, "Started");
+  setLoadtestState(loadtest, loadtestStates.STARTED);
 
   try {
     let i = 0;
@@ -74,7 +90,7 @@ exports.runPlaybook = (user, playbook, loadtest, response) => {
     events
       .triggerUserCalls()
       .then((data) => {
-        setLoadtestState(loadtest, "Running")
+        setLoadtestState(loadtest, loadtestStates.RUNNING)
           .catch((err) => console.log(err))
           .finally((data) => response(200, data, config.headers));
       })
