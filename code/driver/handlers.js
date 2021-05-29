@@ -1,6 +1,4 @@
 const db = require("db");
-const uuid = require("uuid");
-const short = require("short-uuid");
 const config = require("./config");
 const events = require("./events");
 
