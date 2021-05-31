@@ -21,7 +21,7 @@ exports.trackResponseTimeMetric = (workerEventDetail, onSuccess, onFailure) => {
   const params = {
     MetricData: [
       {
-        MetricName: "MOGGIEZ_RESPONSE_TIME",
+        MetricName: "ResponseTime",
         Dimensions: [
           {
             Name: "LOADTEST_ID",
@@ -46,7 +46,7 @@ exports.trackResponseTimeMetric = (workerEventDetail, onSuccess, onFailure) => {
         StorageResolution: STORAGE_RESOLUTION_HIGH,
       },
     ],
-    Namespace: `MOGGIEZ/${customer}/${loadtestId}`,
+    Namespace: `moggies.io/Loadtests`,
   };
   putMetric(params, onSuccess, onFailure);
 };
