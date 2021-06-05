@@ -13,43 +13,34 @@ const loadtestStates = {
   ABORTED: "Aborted",
 };
 
-exports.getLoadtest = (user, loadtestId, response) => {
+exports.getLoadtest = async (user, loadtestId, response) => {
   const onError = (e) => {
     response(500, "Internal server error.", config.headers);
   };
-  return new Promise((resolve, reject) => {
-    organisations
-      .getBySecondaryIndex("UserOrganisations", user.id)
-      .then((orgData) => {
-        if (orgData.Items.length == 0) {
-          response(404, "Not found.", config.headers);
-        } else {
-          const orgId = orgData.Items[0].OrganisationId;
-          loadtests
-            .get(orgId, loadtestId)
-            .then((loadtestData) => {
-              const playbookId = loadtestData.Item.PlaybookId;
-              playbooks
-                .get(orgId, playbookId)
-                .then((playbookData) => {
-                  resolve({
-                    loadtest: loadtestData.Item,
-                    playbook: playbookData.Item,
-                  });
-                })
-                .catch((err) => onError(err));
-            })
-            .catch((err) => onError(err));
-        }
-      })
-      .catch((err) => {
-        console.log("Unable to fetch user organisations.", err);
-        onError(err);
-      });
-  });
+  try {
+    const orgData = await organisations.getBySecondaryIndex(
+      "UserOrganisations",
+      user.id
+    );
+    if (orgData.Items.length == 0) {
+      response(404, "Not found.", config.headers);
+    } else {
+      const orgId = orgData.Items[0].OrganisationId;
+      const loadtestData = await loadtests.get(orgId, loadtestId);
+      const playbookId = loadtestData.Item.PlaybookId;
+      const playbookData = await playbooks.get(orgId, playbookId);
+      return {
+        loadtest: loadtestData.Item,
+        playbook: playbookData.Item,
+      };
+    }
+  } catch (exc) {
+    console.log(exc);
+    response(500, "Internal server error.", config.headers);
+  }
 };
 
-const setLoadtestState = (loadtest, newState) => {
+const setLoadtestState = async (loadtest, newState) => {
   const updated = { ...loadtest };
   delete updated.OrganisationId;
   delete updated.LoadtestId;
@@ -63,20 +54,20 @@ const setLoadtestState = (loadtest, newState) => {
     updated["EndDate"] = new Date().toISOString();
   }
 
-  return loadtests.update(
+  return await loadtests.update(
     loadtest.OrganisationId,
     loadtest.LoadtestId,
     updated
   );
 };
 
-exports.runPlaybook = (user, playbook, loadtest, response) => {
-  const detail = playbook.steps[0];
+exports.runPlaybook = async (user, playbook, loadtest, response) => {
+  const detail = playbook.Steps[0];
   const usersCount = detail["users"];
   const userCallParams = { ...detail };
   delete userCallParams["users"];
 
-  setLoadtestState(loadtest, loadtestStates.STARTED);
+  await setLoadtestState(loadtest, loadtestStates.STARTED);
 
   try {
     let i = 0;
@@ -84,20 +75,11 @@ exports.runPlaybook = (user, playbook, loadtest, response) => {
       events.addUserCall(loadtest.LoadtestId, user.id, userCallParams);
       i++;
     }
-
-    events
-      .triggerUserCalls()
-      .then((data) => {
-        setLoadtestState(loadtest, loadtestStates.RUNNING)
-          .catch((err) => console.log(err))
-          .finally((data) => response(200, data, config.headers));
-      })
-      .catch((err) => {
-        console.log(err);
-        response(500, err, config.headers);
-      });
+    await events.triggerUserCalls();
+    const data = await setLoadtestState(loadtest, loadtestStates.RUNNING);
+    response(200, data, config.headers);
   } catch (exc) {
     console.log(exc);
-    response(500, exc, config.headers);
+    response(500, "Internal server error.", config.headers);
   }
 };

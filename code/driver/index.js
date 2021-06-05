@@ -8,7 +8,7 @@ const handlers = require("./handlers");
 
 const hardLimit = 100;
 
-exports.handler = function (event, context, callback) {
+exports.handler = async function (event, context, callback) {
   const response = helpers.getResponseFn(callback);
 
   if (config.DEBUG) {
@@ -16,25 +16,21 @@ exports.handler = function (event, context, callback) {
   }
 
   const user = auth.getUserFromEvent(event);
-  const httpMethod = event.httpMethod;
-  const pathParameters = event.pathParameters;
-  const pathParams =
-    pathParameters != null && "proxy" in pathParameters && pathParameters.proxy
-      ? pathParameters.proxy.split("/")
-      : [];
-  const loadtestId = pathParams[0];
-  if (httpMethod == "POST") {
-    //const detail = "steps" in body ? body.steps[0] : body;
-    handlers
-      .getLoadtest(user, loadtestId, response)
-      .then((data) => {
-        const playbook = JSON.parse(data.playbook.Playbook);
-        handlers.runPlaybook(user, playbook, data.loadtest, response);
-      })
-      .catch((err) => {
-        console.log("getLoadtest error", err);
-        response(500, "Internal server err", config.headers);
-      });
+  const request = helpers.getRequestFromEvent(event);
+  const loadtestId = request.getPathParamAtIndex(0, null);
+
+  if (request.httpMethod == "POST") {
+    try {
+      const { loadtest, playbook } = await handlers.getLoadtest(
+        user,
+        loadtestId,
+        response
+      );
+      await handlers.runPlaybook(user, playbook, loadtest, response);
+    } catch (exc) {
+      console.log(exc);
+      response(500, "Internal server error.", config.headers);
+    }
   } else {
     response(403, "Not supported.", config.headers);
   }
