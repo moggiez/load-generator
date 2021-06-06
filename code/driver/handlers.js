@@ -14,9 +14,6 @@ const loadtestStates = {
 };
 
 exports.getLoadtest = async (user, loadtestId, response) => {
-  const onError = (e) => {
-    response(500, "Internal server error.", config.headers);
-  };
   try {
     const orgData = await organisations.getBySecondaryIndex(
       "UserOrganisations",
@@ -71,9 +68,16 @@ exports.runPlaybook = async (user, playbook, loadtest, response) => {
 
   try {
     let i = 0;
+    let userInvertedIndex = usersCount - i;
     while (i < usersCount) {
-      events.addUserCall(loadtest.LoadtestId, user.id, userCallParams);
+      events.addUserCall(
+        loadtest.LoadtestId,
+        user.id,
+        userCallParams,
+        userInvertedIndex
+      ); // mark user index
       i++;
+      userInvertedIndex = usersCount - i;
     }
     await events.triggerUserCalls();
     const data = await setLoadtestState(loadtest, loadtestStates.RUNNING);

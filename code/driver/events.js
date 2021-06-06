@@ -13,7 +13,7 @@ const params = {
   Entries: [],
 };
 
-exports.addUserCall = (loadtestId, userId, eventParams) => {
+exports.addUserCall = (loadtestId, userId, eventParams, userInvertedIndex) => {
   const event = {
     Source: EVENT_SOURCE,
     DetailType: eventTypes.USER_CALLS_EVENT_TYPE,
@@ -21,6 +21,7 @@ exports.addUserCall = (loadtestId, userId, eventParams) => {
       ...eventParams,
       loadtestId: loadtestId,
       userId: userId,
+      userInvertedIndex: userInvertedIndex,
     }),
     EventBusName: EVENT_BUS_NAME,
   };

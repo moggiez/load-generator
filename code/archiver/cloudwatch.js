@@ -2,6 +2,7 @@
 
 const AWS = require("aws-sdk");
 const CloudWatch = new AWS.CloudWatch({ apiVersion: "2010-08-01" });
+
 const STORAGE_RESOLUTION_HIGH = 1;
 const STORAGE_RESOLUTION_REGULAR = 60;
 
@@ -50,3 +51,5 @@ exports.trackResponseTimeMetric = (workerEventDetail, onSuccess, onFailure) => {
   };
   putMetric(params, onSuccess, onFailure);
 };
+
+exports.saveMetricsToDB = (loadtest) => {};

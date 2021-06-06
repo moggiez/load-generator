@@ -2,9 +2,9 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "CloudWatchPutMetrics",
+      "Sid": "CloudWatchPutGetMetrics",
       "Effect": "Allow",
-      "Action": "cloudwatch:PutMetricData",
+      "Action": ["cloudwatch:PutMetricData", "cloudwatch:GetMetricData"],
       "Resource": "*"
     }
   ]

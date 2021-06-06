@@ -17,6 +17,7 @@ const onRequestSuccess = (request, callback, result, terminate) => {
     request: request,
     customer: "default",
     result: result,
+    wasUserLastRequest: terminate,
   };
   events.sendEvent(
     eventTypes.WORKER_SUCCESS_EVENT_TYPE,

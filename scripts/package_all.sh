@@ -3,7 +3,7 @@
 CODE_DIR=$PWD/code
 LIBS_DIR=$PWD/code/libs
 DIST_DIR=$PWD/dist
-LAMBDAS=("driver" "worker" "archiver")
+LAMBDAS=("driver" "worker" "archiver" "metrics_saver")
  
 for lambda in "${LAMBDAS[@]}"
 do
