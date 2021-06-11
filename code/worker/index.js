@@ -15,7 +15,6 @@ const terminateWithFailure = (callback, err) => {
 const onRequestSuccess = (request, callback, result, terminate) => {
   const payload = {
     request: request,
-    customer: "default",
     result: result,
     wasUserLastRequest: terminate,
   };
@@ -30,7 +29,6 @@ const onRequestSuccess = (request, callback, result, terminate) => {
 const onRequestFailure = (request, callback, error) => {
   const payload = {
     request: request,
-    customer: "default",
     error: error,
   };
   events.sendEvent(

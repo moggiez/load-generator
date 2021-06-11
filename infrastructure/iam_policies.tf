@@ -71,3 +71,10 @@ resource "aws_iam_policy" "dynamodb_access_policy_loadtest_metrics" {
 
   policy = templatefile("templates/dynamo_access_policy.json", { table = "loadtest_metrics" })
 }
+
+resource "aws_iam_policy" "dynamodb_access_policy_domains" {
+  name = "lambda_access_dynamodb_policy_domains"
+  path = "/"
+
+  policy = templatefile("templates/dynamo_access_policy.json", { table = "domains" })
+}

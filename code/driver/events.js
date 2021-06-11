@@ -13,12 +13,19 @@ const params = {
   Entries: [],
 };
 
-exports.addUserCall = (loadtestId, userId, eventParams, userInvertedIndex) => {
+exports.addUserCall = (
+  customerId,
+  loadtestId,
+  userId,
+  eventParams,
+  userInvertedIndex
+) => {
   const event = {
     Source: EVENT_SOURCE,
     DetailType: eventTypes.USER_CALLS_EVENT_TYPE,
     Detail: JSON.stringify({
       ...eventParams,
+      customerId: customerId,
       loadtestId: loadtestId,
       userId: userId,
       userInvertedIndex: userInvertedIndex,

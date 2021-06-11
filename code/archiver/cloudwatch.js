@@ -17,7 +17,7 @@ const putMetric = (params, onSuccess, onFailure) => {
 };
 
 exports.trackResponseTimeMetric = (workerEventDetail, onSuccess, onFailure) => {
-  const customer = workerEventDetail.customer;
+  const customer = workerEventDetail.request.customerId;
   const loadtestId = workerEventDetail.request.loadtestId;
   const params = {
     MetricData: [

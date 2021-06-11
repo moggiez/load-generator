@@ -71,6 +71,7 @@ exports.runPlaybook = async (user, playbook, loadtest, response) => {
     let userInvertedIndex = usersCount - i;
     while (i < usersCount) {
       events.addUserCall(
+        loadtest.OrganisationId,
         loadtest.LoadtestId,
         user.id,
         userCallParams,

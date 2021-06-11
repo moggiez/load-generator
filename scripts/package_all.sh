@@ -1,9 +1,8 @@
 #! /bin/bash
 
 CODE_DIR=$PWD/code
-LIBS_DIR=$PWD/code/libs
 DIST_DIR=$PWD/dist
-LAMBDAS=("driver" "worker" "archiver" "metrics_saver")
+LAMBDAS=("driver" "worker" "archiver" "metrics_saver" "domain_validator")
  
 for lambda in "${LAMBDAS[@]}"
 do
