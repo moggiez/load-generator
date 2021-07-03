@@ -1,6 +1,6 @@
 "use strict";
 const dns = require("dns");
-const db = require("db");
+const db = require("moggies-db");
 
 const domains = new db.Table(db.tableConfigs.domains);
 

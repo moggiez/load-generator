@@ -2,8 +2,8 @@
 
 const AWS = require("aws-sdk");
 const CloudWatch = new AWS.CloudWatch({ apiVersion: "2010-08-01" });
-const metricsHelpers = require("metrics");
-const db = require("db");
+const metricsHelpers = require("moggies-metrics");
+const db = require("moggies-db");
 const loadtest_metrics = new db.Table(db.tableConfigs.loadtest_metrics);
 
 const Metrics = new metricsHelpers.Metrics(CloudWatch);

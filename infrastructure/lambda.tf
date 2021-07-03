@@ -3,6 +3,8 @@ module "driver" {
   name      = "driver_lambda"
   dist_dir  = var.dist_dir
   s3_bucket = aws_s3_bucket.moggiez_lambdas
+  environment    = local.environment
+  
   timeout   = 60
   policies = [
     aws_iam_policy.eventbridge_events.arn,
@@ -10,11 +12,7 @@ module "driver" {
     aws_iam_policy.dynamodb_access_policy_playbooks.arn,
     aws_iam_policy.dynamodb_access_policy_organisations.arn
   ]
-  layers = [
-    data.aws_lambda_layer_version.db.arn,
-    data.aws_lambda_layer_version.auth.arn,
-    data.aws_lambda_layer_version.lambda_helpers.arn
-  ]
+  layers = []
 }
 
 module "worker" {
@@ -44,6 +42,7 @@ module "metricsSaver" {
   name      = "metrics_saver_lambda"
   dist_dir  = var.dist_dir
   s3_bucket = aws_s3_bucket.moggiez_lambdas
+  environment    = local.environment
 
   timeout = 60
 
@@ -54,10 +53,7 @@ module "metricsSaver" {
     aws_iam_policy.dynamodb_access_policy_loadtest_metrics.arn
   ]
 
-  layers = [
-    data.aws_lambda_layer_version.db.arn,
-    data.aws_lambda_layer_version.metrics.arn
-  ]
+  layers = []
 }
 
 module "domainValidator" {
@@ -65,6 +61,7 @@ module "domainValidator" {
   name      = "domain_validator_lambda"
   dist_dir  = var.dist_dir
   s3_bucket = aws_s3_bucket.moggiez_lambdas
+  environment    = local.environment
 
   timeout = 60
 
@@ -72,7 +69,5 @@ module "domainValidator" {
     aws_iam_policy.dynamodb_access_policy_domains.arn,
   ]
 
-  layers = [
-    data.aws_lambda_layer_version.db.arn,
-  ]
+  layers = []
 }

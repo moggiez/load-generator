@@ -2,7 +2,7 @@
 
 const s3 = require("./s3");
 const cw = require("./cloudwatch");
-const db = require("db");
+const db = require("moggies-db");
 const loadtests = new db.Table(db.tableConfigs.loadtests);
 
 const setLoadtestMetricsSaved = async (loadtest) => {

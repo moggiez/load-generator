@@ -23,6 +23,11 @@ variable "application" {
   default = "Moggiez"
 }
 
+variable "domain_name" {
+  type    = string
+  default = "moggies.io"
+}
+
 variable "user_pool_id" {
   type    = string
   default = "eu-west-1_SPWgZjaBY"
