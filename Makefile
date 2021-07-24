@@ -2,7 +2,7 @@ version-build:
 	./increment_version.sh
 
 build-cleanup:
-	rm -rf ./dist/* & mkdir -p dist
+	rm -rf ./dist/* & mkdir -p dist && rm -rf ./code/driver/node_modules && rm -rf ./code/worker/node_modules && rm -rf ./code/archiver/node_modules
 
 modules-cleanup:
 	cd infrastructure && rm -rf .terraform/modules
@@ -27,5 +27,9 @@ fmt:
 
 undeploy:
 	cd infrastructure && terraform destroy
+
 npm-auth:
 	aws codeartifact login --tool npm --repository team-npm --domain moggies-io --domain-owner 989665778089
+
+update-lambda-fn:
+	aws lambda update-function-code --function-name ${FUNC_NAME} --zip-file fileb://$(shell pwd)/dist/${FUNC_NAME}.zip --publish | jq .FunctionArn

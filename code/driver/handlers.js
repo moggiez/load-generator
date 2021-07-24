@@ -1,10 +1,9 @@
 const db = require("moggies-db");
-const config = require("./config");
 const events = require("./events");
+const { HttpClient } = require("./httpClient");
 
 const organisations = new db.Table(db.tableConfigs.organisations);
 const loadtests = new db.Table(db.tableConfigs.loadtests);
-const playbooks = new db.Table(db.tableConfigs.playbooks);
 
 const loadtestStates = {
   STARTED: "Started",
@@ -13,31 +12,44 @@ const loadtestStates = {
   ABORTED: "Aborted",
 };
 
+const usersApiUrl = "https://users-api.moggies.io";
+const loadtestsApiUrl = "https://loadtests-api.moggies.io";
+const playbooksApiUrl = "https://playbooks-api.moggies.io";
+
 exports.getLoadtest = async (user, loadtestId, response) => {
+  const http = new HttpClient(user);
+
   try {
-    const orgData = await organisations.getBySecondaryIndex(
-      "UserOrganisations",
-      user.id
-    );
-    if (orgData.Items.length == 0) {
-      response(404, "Not found.", config.headers);
+    const usersResponse = await http.get(`${usersApiUrl}/${user.id}`);
+    if (
+      usersResponse.status != 200 ||
+      !("OrganisationId" in usersResponse.data)
+    ) {
+      response(404, "Not found.");
     } else {
-      const orgId = orgData.Items[0].OrganisationId;
-      const loadtestData = await loadtests.get(orgId, loadtestId);
-      const playbookId = loadtestData.Item.PlaybookId;
-      const playbookData = await playbooks.get(orgId, playbookId);
-      return {
-        loadtest: loadtestData.Item,
-        playbook: playbookData.Item,
-      };
+      const orgId = usersResponse.data.OrganisationId;
+
+      const loadtestResponse = await http.get(
+        `${loadtestsApiUrl}/${orgId}/${loadtestId}`
+      );
+      if (loadtestResponse.status == 200) {
+        const playbookId = loadtestResponse.data.PlaybookId;
+        const playbookResponse = await http.get(
+          `${playbooksApiUrl}/${orgId}/playbooks/${playbookId}`
+        );
+        return {
+          loadtest: loadtestResponse.data,
+          playbook: playbookResponse.data,
+        };
+      }
     }
   } catch (exc) {
     console.log(exc);
-    response(500, "Internal server error.", config.headers);
+    response(500, "Internal server error.");
   }
 };
 
-const setLoadtestState = async (loadtest, newState) => {
+const setLoadtestState = async (loadtest, newState, http) => {
   const updated = { ...loadtest };
   delete updated.OrganisationId;
   delete updated.LoadtestId;
@@ -50,41 +62,53 @@ const setLoadtestState = async (loadtest, newState) => {
   ) {
     updated["EndDate"] = new Date().toISOString();
   }
-
-  return await loadtests.update(
-    loadtest.OrganisationId,
-    loadtest.LoadtestId,
+  return await http.put(
+    `${loadtestsApiUrl}/${loadtest.OrganisationId}/${loadtest.LoadtestId}`,
     updated
   );
 };
 
 exports.runPlaybook = async (user, playbook, loadtest, response) => {
+  const http = new HttpClient(user);
+
   const detail = playbook.Steps[0];
   const usersCount = detail["users"];
   const userCallParams = { ...detail };
   delete userCallParams["users"];
 
-  await setLoadtestState(loadtest, loadtestStates.STARTED);
+  const startResponse = await setLoadtestState(
+    loadtest,
+    loadtestStates.STARTED,
+    http
+  );
 
-  try {
-    let i = 0;
-    let userInvertedIndex = usersCount - i;
-    while (i < usersCount) {
-      events.addUserCall(
-        loadtest.OrganisationId,
-        loadtest.LoadtestId,
-        user.id,
-        userCallParams,
-        userInvertedIndex
-      ); // mark user index
-      i++;
-      userInvertedIndex = usersCount - i;
+  if (startResponse.status == 200) {
+    try {
+      let i = 0;
+      let userInvertedIndex = usersCount - i;
+      while (i < usersCount) {
+        events.addUserCall(
+          loadtest.OrganisationId,
+          loadtest.LoadtestId,
+          user.id,
+          userCallParams,
+          userInvertedIndex
+        ); // mark user index
+        i++;
+        userInvertedIndex = usersCount - i;
+      }
+      await events.triggerUserCalls();
+      const setResponse = await setLoadtestState(
+        loadtest,
+        loadtestStates.RUNNING,
+        http
+      );
+      response(200, setResponse.data);
+    } catch (exc) {
+      console.log(exc);
+      response(500, "Internal server error.");
     }
-    await events.triggerUserCalls();
-    const data = await setLoadtestState(loadtest, loadtestStates.RUNNING);
-    response(200, data, config.headers);
-  } catch (exc) {
-    console.log(exc);
-    response(500, "Internal server error.", config.headers);
+  } else {
+    response(500, "Error starting loadtets.");
   }
 };

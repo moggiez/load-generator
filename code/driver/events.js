@@ -3,7 +3,6 @@
 const AWS = require("aws-sdk");
 const eventbridge = new AWS.EventBridge();
 const eventTypes = require("./eventTypes");
-const config = require("./config");
 
 const EVENT_SOURCE = "Driver";
 const EVENT_BUS_NAME = "moggiez-load-test";
