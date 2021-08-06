@@ -15,7 +15,9 @@ const params = {
 exports.addUserCall = (
   customerId,
   loadtestId,
-  userId,
+  jobId,
+  taskId,
+  user,
   eventParams,
   userInvertedIndex
 ) => {
@@ -24,10 +26,13 @@ exports.addUserCall = (
     DetailType: eventTypes.USER_CALLS_EVENT_TYPE,
     Detail: JSON.stringify({
       ...eventParams,
-      customerId: customerId,
-      loadtestId: loadtestId,
-      userId: userId,
-      userInvertedIndex: userInvertedIndex,
+      customerId,
+      loadtestId,
+      jobId,
+      taskId,
+      userId: user.id,
+      user,
+      userInvertedIndex,
     }),
     EventBusName: EVENT_BUS_NAME,
   };

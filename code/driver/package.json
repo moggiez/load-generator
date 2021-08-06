@@ -6,10 +6,9 @@
     "moggiez"
   ],
   "dependencies": {
-    "axios": "^0.21.1",
-    "moggies-auth": "^0.1.3",
-    "moggies-db": "^0.1.3",
-    "moggies-lambda-helpers": "^0.1.2"
+    "@moggiez/moggies-auth": "^0.2.0",
+    "@moggiez/moggies-lambda-helpers": "^0.2.1",
+    "axios": "^0.21.1"
   },
   "devDependencies": {
     "jest": "^27.0.5",

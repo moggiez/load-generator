@@ -132,3 +132,4 @@ infrastructure/terraform-backend/.terraform
 **/node_modules/
 !code/libs/**
 .DS_Store
+**/.npmrc

@@ -1,10 +1,8 @@
 "use strict";
-const helpers = require("moggies-lambda-helpers");
-const auth = require("moggies-auth");
+const helpers = require("@moggiez/moggies-lambda-helpers");
+const auth = require("@moggiez/moggies-auth");
 
 const handlers = require("./handlers");
-
-const hardLimit = 100;
 
 const DEBUG = false;
 
@@ -28,7 +26,7 @@ exports.handler = async function (event, context, callback) {
       );
       await handlers.runPlaybook(user, playbook, loadtest, response);
     } catch (exc) {
-      console.log(exc);
+      console.log("Error: " + exc);
       response(500, "Internal server error.");
     }
   } else {

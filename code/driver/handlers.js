@@ -1,9 +1,6 @@
-const db = require("moggies-db");
 const events = require("./events");
 const { HttpClient } = require("./httpClient");
-
-const organisations = new db.Table(db.tableConfigs.organisations);
-const loadtests = new db.Table(db.tableConfigs.loadtests);
+const { JobsApiClient } = require("./jobsApiClient");
 
 const loadtestStates = {
   STARTED: "Started",
@@ -44,7 +41,7 @@ exports.getLoadtest = async (user, loadtestId, response) => {
       }
     }
   } catch (exc) {
-    console.log(exc);
+    console.log("Error: " + exc);
     response(500, "Internal server error.");
   }
 };
@@ -70,6 +67,7 @@ const setLoadtestState = async (loadtest, newState, http) => {
 
 exports.runPlaybook = async (user, playbook, loadtest, response) => {
   const http = new HttpClient(user);
+  const jobsApi = new JobsApiClient(user);
 
   const detail = playbook.Steps[0];
   const usersCount = detail["users"];
@@ -82,15 +80,19 @@ exports.runPlaybook = async (user, playbook, loadtest, response) => {
     http
   );
 
+  const jobData = await jobsApi.createJob({});
   if (startResponse.status == 200) {
     try {
       let i = 0;
       let userInvertedIndex = usersCount - i;
       while (i < usersCount) {
+        const taskData = await jobsApi.createTask(jobData.data.JobId, {});
         events.addUserCall(
           loadtest.OrganisationId,
           loadtest.LoadtestId,
-          user.id,
+          taskData.data.JobId,
+          taskData.data.TaskId,
+          user,
           userCallParams,
           userInvertedIndex
         ); // mark user index
@@ -105,7 +107,7 @@ exports.runPlaybook = async (user, playbook, loadtest, response) => {
       );
       response(200, setResponse.data);
     } catch (exc) {
-      console.log(exc);
+      console.log("Error: " + exc);
       response(500, "Internal server error.");
     }
   } else {

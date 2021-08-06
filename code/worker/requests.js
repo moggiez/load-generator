@@ -37,14 +37,11 @@ const makeRequest = (options, onSuccess, onError) => {
   req.end();
 };
 
-const makeRequestAxiosGet = (options, onSuccess, onError) => {
+const makeRequestAxiosGet = async (options) => {
   const url = `${options.protocol}://${options.hostname}${getPortString(
     options
   )}/${options.path}`;
-  axios
-    .get(url)
-    .then((response) => onSuccess(response))
-    .catch((error) => onError(error));
+  return axios.get(url);
 };
 
 exports.makeRequest = makeRequest;

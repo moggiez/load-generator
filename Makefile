@@ -28,8 +28,10 @@ fmt:
 undeploy:
 	cd infrastructure && terraform destroy
 
+
+# NPM COMMANDS
 npm-auth:
-	aws codeartifact login --tool npm --repository team-npm --domain moggies-io --domain-owner 989665778089
+	./scripts/npm_auth.sh
 
 update-lambda-fn:
 	aws lambda update-function-code --function-name ${FUNC_NAME} --zip-file fileb://$(shell pwd)/dist/${FUNC_NAME}.zip --publish | jq .FunctionArn

@@ -15,7 +15,7 @@ class HttpClient {
       });
       Promise.resolve();
     } catch (e) {
-      console.log("Error: " + e);
+      console.log(e);
       Promise.reject(e);
     }
   }
@@ -29,13 +29,6 @@ class HttpClient {
       await this.initialize();
     }
     return await this.instance.get(url);
-  }
-
-  async post(url, data) {
-    if (this.instance == null) {
-      await this.initialize();
-    }
-    return await this.instance.post(url, data);
   }
 
   async put(url, data) {
