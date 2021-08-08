@@ -2,7 +2,6 @@
 
 API and event driven components (lambdas) to orchestrate the generation of load on customer APIs.
 
-- Driver lambda - exposed via API Gateway receives load generation requests and disperses `User Call` events via Event Bridge
 - Worker lambda - triggered by `User Call` events, executes calls to customer APIs
 - Archiver lambda (to rename) - handles events triggered by Worker and archives the results from calls to customer APIs in S3 and tracks metrics (like ResponseTime) in CloudWatch.
 - Metrics Saver - saves high resolution (sub 1 second) metrics to DynamoDB, because retention for those in CloudWatch at that resolution is only 3 hours (aggregated after https://aws.amazon.com/cloudwatch/faqs/#AWS_resource_.26_custom_metrics_monitoring)

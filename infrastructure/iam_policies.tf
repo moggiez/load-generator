@@ -27,23 +27,6 @@ resource "aws_iam_policy" "cloudwatch_metrics_access" {
   policy = templatefile("templates/cloudwatch_metrics_access_policy.json", {})
 }
 
-resource "aws_iam_policy" "eventbridge_events" {
-  name        = "eventbridge_access_driver"
-  path        = "/"
-  description = "IAM policy for logging from a lambda"
-
-  policy = jsonencode({
-    "Version" : "2012-10-17",
-    "Statement" : [
-      {
-        "Effect" : "Allow",
-        "Action" : "events:PutEvents",
-        "Resource" : "*"
-      }
-    ]
-  })
-}
-
 resource "aws_iam_policy" "dynamodb_access_policy_loadtests" {
   name = "lambda_access_dynamodb_policy_loadtests"
   path = "/"
