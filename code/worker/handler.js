@@ -51,7 +51,7 @@ class Handler {
   }
 
   async onRequestFailure(request, error, terminate) {
-    this.errors.push(result);
+    this.errors.push(error);
     const payload = {
       request: request,
       error: error,
