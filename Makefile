@@ -2,7 +2,7 @@ version-build:
 	./increment_version.sh
 
 build-cleanup:
-	rm -rf ./dist/* & mkdir -p dist && rm -rf ./code/worker/node_modules && rm -rf ./code/archiver/node_modules
+	rm -rf ./dist/* & mkdir -p dist && rm -rf ./code/archiver/node_modules
 
 modules-cleanup:
 	cd infrastructure && rm -rf .terraform/modules

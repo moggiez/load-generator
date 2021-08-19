@@ -1,12 +1,3 @@
-module "worker" {
-  source        = "git@github.com:moggiez/terraform-modules.git//event_driven_lambda"
-  function_name = "worker_lambda"
-  key           = "worker_lambda"
-  s3_bucket     = aws_s3_bucket.moggiez_lambdas
-  timeout       = 300
-  dist_dir      = var.dist_dir
-  policies      = []
-}
 
 module "archiver" {
   source        = "git@github.com:moggiez/terraform-modules.git//event_driven_lambda"

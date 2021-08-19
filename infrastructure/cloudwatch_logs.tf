@@ -1,7 +1,4 @@
 # Log groups
-resource "aws_cloudwatch_log_group" "moggiez_worker" {
-  name = "/aws/events/moggiez_worker"
-}
 
 resource "aws_cloudwatch_log_group" "moggiez_archiver" {
   name = "/aws/events/moggiez_archiver"
