@@ -2,7 +2,7 @@
 
 CODE_DIR=$PWD/code
 DIST_DIR=$PWD/dist
-LAMBDAS=("archiver" "metrics_saver" "domain_validator")
+LAMBDAS=("metrics_saver" "domain_validator")
  
 for lambda in "${LAMBDAS[@]}"
 do

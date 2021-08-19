@@ -1,16 +1,3 @@
-
-module "archiver" {
-  source        = "git@github.com:moggiez/terraform-modules.git//event_driven_lambda"
-  function_name = "MoggiezArchiver"
-  key           = "archiver_lambda"
-  s3_bucket     = aws_s3_bucket.moggiez_lambdas
-  dist_dir      = var.dist_dir
-  policies = [
-    aws_iam_policy.s3_access.arn,
-    aws_iam_policy.cloudwatch_metrics_access.arn
-  ]
-}
-
 module "metricsSaver" {
   source      = "git@github.com:moggiez/terraform-modules.git//lambda_with_dynamo"
   name        = "metrics_saver_lambda"
