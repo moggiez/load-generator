@@ -127,7 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-infrastructure/.terraform/
+infrastructure/.terraform*
 infrastructure/terraform-backend/.terraform
 **/node_modules/
 !code/libs/**

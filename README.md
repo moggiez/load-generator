@@ -2,13 +2,10 @@
 
 API and event driven components (lambdas) to orchestrate the generation of load on customer APIs.
 
-- Worker lambda - triggered by `User Call` events, executes calls to customer APIs
-- Archiver lambda (to rename) - handles events triggered by Worker and archives the results from calls to customer APIs in S3 and tracks metrics (like ResponseTime) in CloudWatch.
-- Metrics Saver - saves high resolution (sub 1 second) metrics to DynamoDB, because retention for those in CloudWatch at that resolution is only 3 hours (aggregated after https://aws.amazon.com/cloudwatch/faqs/#AWS_resource_.26_custom_metrics_monitoring)
 - Domain Validator - validates domains attached to an organisation, validation is done via DNS
 
 Scheduled lambdas:
-`Metrics Saver` and `Domain Validator` lambdas are triggered on a schedule to perform their work. The schedule is configured via IaC.
+`Domain Validator` lambda is triggered on a schedule to perform their work. The schedule is configured via IaC.
 
 # Development
 
