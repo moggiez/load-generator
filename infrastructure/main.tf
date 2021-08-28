@@ -16,22 +16,3 @@ terraform {
 provider "aws" {
   region = var.region
 }
-
-provider "aws" {
-  alias  = "acm_provider"
-  region = "us-east-1"
-}
-
-data "aws_route53_zone" "public" {
-  private_zone = false
-  name         = var.domain_name
-}
-
-locals {
-  hosted_zone           = data.aws_route53_zone.public
-  authorization_enabled = true
-  environment           = "PROD"
-  tags = {
-    Project = var.application
-  }
-}
